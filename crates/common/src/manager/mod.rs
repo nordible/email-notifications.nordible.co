@@ -29,7 +29,9 @@ pub async fn fetch_resource(
     timeout: Duration,
     max_size: usize,
 ) -> Result<Vec<u8>, String> {
-    if let Some(path) = url.strip_prefix("file://") {
+    if url == "embedded://webui.zip" {
+        Ok(include_bytes!("../../../../resources/webui.zip").to_vec())
+    } else if let Some(path) = url.strip_prefix("file://") {
         tokio::fs::read(path)
             .await
             .map_err(|err| format!("Failed to read {path}: {err}"))

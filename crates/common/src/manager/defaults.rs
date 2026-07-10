@@ -60,12 +60,7 @@ async fn insert_safe_defaults(bp: &mut Bootstrap) -> trc::Result<()> {
                     auto_update_frequency: Duration::from_millis(30 * 24 * 60 * 60 * 1000),
                     description: "Nordible Mail Web Interface".to_string(),
                     enabled: true,
-                    #[cfg(not(feature = "dev_mode"))]
-                    resource_url:
-                        "https://email.nordible.co/assets/webui.zip"
-                            .into(),
-                    #[cfg(feature = "dev_mode")]
-                    resource_url: "file:///Users/me/code/webui/.ignore/webui.zip".into(),
+                    resource_url: "embedded://webui.zip".into(),
                     unpack_directory: None,
                     url_prefix: Map::new(vec!["/admin".into(), "/account".into()]),
                 }
