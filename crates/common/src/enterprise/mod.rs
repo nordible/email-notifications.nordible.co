@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: LicenseRef-SEL
  *
- * This file is subject to the Stalwart Enterprise License Agreement (SEL) and
+ * This file is subject to the Nordible Mail Enterprise License Agreement and
  * is NOT open source software.
  *
  */
@@ -99,9 +99,9 @@ impl Core {
 impl Server {
     // WARNING: TAMPERING WITH THIS FUNCTION IS STRICTLY PROHIBITED
     // Any attempt to modify, bypass, or disable this license validation mechanism
-    // constitutes a severe violation of the Stalwart Enterprise License Agreement.
+    // constitutes a severe violation of the Nordible License Agreement.
     // Such actions may result in immediate termination of your license, legal action,
-    // and substantial financial penalties. Stalwart Labs LLC actively monitors for
+    // and substantial financial penalties. Nordible Solutions actively monitors for
     // unauthorized modifications and will pursue all available legal remedies against
     // violators to the fullest extent of the law, including but not limited to claims
     // for copyright infringement, breach of contract, and fraud.
@@ -118,7 +118,7 @@ impl Server {
     pub fn log_license_details(&self) {
         trc::event!(
             Server(trc::ServerEvent::Licensing),
-            Details = "Stalwart Enterprise Edition license key is valid",
+            Details = "Nordible Mail Enterprise Edition license key is valid",
             Domain = "localhost".to_string(),
             Total = u32::MAX,
             ValidFrom = "1970-01-01T00:00:00Z".to_string(),

@@ -1,5 +1,5 @@
 envelope_from noreply@tetheer.com
-envelope_to licensing@stalw.art
+envelope_to mail@nordible.co
 helo_domain yphoo.vps.wbsprt.com
 iprev.result permerror
 spf.result none
@@ -10,7 +10,7 @@ expect_header X-Spam-Result: ARC_NA (0.00), DKIM2_NA (0.00), DKIM_NA (0.00), FRO
 expect_header X-Spam-Score: spam, score=13.70
 
 From: Client Services <noreply@tetheer.com>
-To: licensing@stalw.art
+To: mail@nordible.co
 Subject: Tether Important Update !
 Date: 16 Oct 2023 06:40:52 +0200
 Message-ID: <20231016064052.403F7FEF5F005EFB@tetheer.com>
@@ -780,7 +780,7 @@ e; CLICK AQU&Iacute; CLICK AQU&Iacute; CLICK AQU&Iacute; CLICK AQU&Iacute;"=
 
 <!-- NEXT TEST -->
 envelope_from miah.join@outlook.com
-envelope_to hello@stalw.art
+envelope_to mail@nordible.co
 helo_domain HK2PR02CU002.outbound.protection.outlook.com
 iprev.result pass
 dkim.result pass
@@ -819,7 +819,7 @@ Received: from SEYPR04MB7496.apcprd04.prod.outlook.com
  ([fe80::1aab:cf90:44d8:af4e%6]) with mapi id 15.20.8293.000; Tue, 31 Dec 2024
  08:24:54 +0000
 From: Miah Join <miah.join@outlook.com>
-To: "hello@stalw.art" <hello@stalw.art>
+To: "mail@nordible.co" <mail@nordible.co>
 Subject: SEO-Inquiry
 Thread-Topic: SEO-Inquiry
 Thread-Index: AdtbXSTUEOZ2HAOVQCqvPiaCPhJ+xw==
@@ -903,7 +903,7 @@ X-MS-Exchange-Transport-CrossTenantHeadersStamped: PUZPR04MB6246
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Hello, hello@stalw.art
+Hello, mail@nordible.co
 
 
 
@@ -978,7 +978,7 @@ div.WordSection1
 </head>
 <body lang=3D"EN-US" style=3D"word-wrap:break-word">
 <div class=3D"WordSection1">
-<p class=3D"MsoNoSpacing"><span lang=3D"EN-IN">Hello, hello@stalw.art &nbsp=
+<p class=3D"MsoNoSpacing"><span lang=3D"EN-IN">Hello, mail@nordible.co &nbsp=
 ;&nbsp;&nbsp;&nbsp;&nbsp;<o:p></o:p></span></p>
 <p class=3D"MsoNoSpacing"><span lang=3D"EN-IN"><o:p>&nbsp;</o:p></span></p>
 <p class=3D"MsoNoSpacing"><span lang=3D"EN-IN">I&#8217;m just checking with=
@@ -1010,7 +1010,7 @@ om you.&nbsp; <o:p>
 
 <!-- NEXT TEST -->
 envelope_from marketing@landeray.com
-envelope_to hello@stalw.art
+envelope_to mail@nordible.co
 helo_domain terminal4.landeray.com
 iprev.result pass
 dkim.result pass

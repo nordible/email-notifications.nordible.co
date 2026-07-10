@@ -4,7 +4,7 @@ Stalwart v0.16 migration helper.
 
 Two modes:
 
-  dump    — pull all settings and principals from a Stalwart server via the
+  dump    — pull all settings and principals from a Nordible Mail Server via the
             management API into two JSON files.
 
   convert — read those two JSON files and emit:
@@ -2093,13 +2093,13 @@ def cmd_convert(args: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        description="Dump / migrate a Stalwart server via its management API.",
+        description="Dump / migrate a Nordible Mail Server via its management API.",
     )
     sub = p.add_subparsers(dest="command", required=True)
 
     d = sub.add_parser("dump", help="Dump settings and principals to JSON files.")
     d.add_argument("--url", required=True,
-                   help="Base URL of the Stalwart server, e.g. https://mail.example.com")
+                   help="Base URL of the Nordible Mail Server, e.g. https://mail.example.com")
     d.add_argument("--token", help="Bearer token.")
     d.add_argument("--username", help="Admin username for HTTP Basic auth.")
     d.add_argument("--password", help="Admin password for HTTP Basic auth.")

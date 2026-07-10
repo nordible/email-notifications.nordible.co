@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: LicenseRef-SEL
  *
- * This file is subject to the Stalwart Enterprise License Agreement (SEL) and
+ * This file is subject to the Nordible Mail Enterprise License Agreement and
  * is NOT open source software.
  *
  */
@@ -11,9 +11,9 @@
 /*
  * WARNING: TAMPERING WITH THIS CODE IS STRICTLY PROHIBITED
  * Any attempt to modify, bypass, or disable the license validation mechanism
- * constitutes a severe violation of the Stalwart Enterprise License Agreement.
+ * constitutes a severe violation of the Nordible License Agreement.
  * Such actions may result in immediate termination of your license, legal action,
- * and substantial financial penalties. Stalwart Labs LLC actively monitors for
+ * and substantial financial penalties. Nordible Solutions actively monitors for
  * unauthorized modifications and will pursue all available legal remedies against
  * violators to the fullest extent of the law, including but not limited to claims
  * for copyright infringement, breach of contract, and fraud.
@@ -31,7 +31,7 @@ use store::write::now;
 use trc::ServerEvent;
 
 //const LICENSING_API: &str = "https://localhost:444/api/license/";
-const LICENSING_API: &str = "https://license.stalw.art/api/license/";
+const LICENSING_API: &str = "https://license.nordible.co/api/license/";
 const RENEW_THRESHOLD: u64 = 60 * 60 * 24 * 4; // 4 days
 
 pub struct LicenseValidator {
@@ -191,7 +191,7 @@ impl LicenseKey {
 
         trc::event!(
             Server(ServerEvent::Licensing),
-            Details = "Attempting to renew Enterprise license from license.stalw.art",
+            Details = "Attempting to renew Enterprise license from license.nordible.co",
         );
 
         match fetch_resource(

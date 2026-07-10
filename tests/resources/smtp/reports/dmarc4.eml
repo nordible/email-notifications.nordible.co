@@ -1,9 +1,9 @@
-Received: from mail.stalw.art ([mail.stalw.art])	by 127.0.0.1 (Stalwart JMAP) with LMTP;	Tue, 25 Oct 2022 04:08:22 +0000
+Received: from mail.nordible.co ([mail.nordible.co])	by 127.0.0.1 (Stalwart JMAP) with LMTP;	Tue, 25 Oct 2022 04:08:22 +0000
 Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2073.outbound.protection.outlook.com [40.107.244.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.stalw.art (Postfix) with ESMTPS id A24107CC0A
-	for <domains@stalw.art>; Tue, 25 Oct 2022 04:08:22 +0000 (UTC)
+	by mail.nordible.co (Postfix) with ESMTPS id A24107CC0A
+	for <mail@nordible.co>; Tue, 25 Oct 2022 04:08:22 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
  b=SvolQ1oIEgdfCI6dbwmJ1jS0ovWmprW6kT3q9NgrbX+CMhIsdrqyS3Q1sO16KT2wCQAyNofiEZ5tKY0e1PzzMqeR29jUWvEye9T43fCfUeLFx9b45YrfkGYwqLeDIq0Ywl+ggVmsm7X83XqI6+9EC6qMukCb0cbLazu3rW/Rbyc6d5+fq6QTFZovATGRvHz71H9t7e//hYI23XjU5Q3Enw0Qq3xPSyusWDi3t7CfGXn9i2120XlNLnPxef5PCmwy4E+OTJ5qC5WtMthOskKKuFvx8onOYmc/JjJ3VrtZwALx9C+ulzix5US6H7pFvZ2jtDbMnW4U7ir/hp5xn5adFw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
@@ -40,7 +40,7 @@ Message-ID: <725cbfbe133940149987cfc528387235@microsoft.com>
 X-Sender: <dmarcreport@microsoft.com> XATTRDIRECT=Originating XATTRORGID=xorgid:96f9e21d-a1c4-44a3-99e4-37191ac61848
 MIME-Version: 1.0
 From: "DMARC Aggregate Report" <dmarcreport@microsoft.com>
-To: <domains@stalw.art>
+To: <mail@nordible.co>
 Subject: =?utf-8?B?UmVwb3J0IERvbWFpbjogc3RhbHcuYXJ0IFN1Ym1pdHRlcjogcHJvdGVjdGlvbi5vdXRsb29rLmNvbSBSZXBvcnQtSUQ6IDcyNWNiZmJlMTMzOTQwMTQ5OTg3Y2ZjNTI4Mzg3MjM1?=
 Content-Type: multipart/mixed;
 	boundary="_mpm_a4bcd9a515b44b9d8eceb05d7333675fpiotk5m200exchangecorpm_"
@@ -108,8 +108,8 @@ dheSwgUmVkbW9uZCwgV0EsIFVTQSA5ODA1Mi48LyBkaXYgPg==
 Content-Type: application/gzip
 Content-Transfer-Encoding: base64
 Content-ID: <3ff45643-7977-4f3c-a97d-14b9e7faa5e7>
-Content-Description: protection.outlook.com!stalw.art!1666483200!1666569600.xml.gz
-Content-Disposition: attachment; filename="protection.outlook.com!stalw.art!1666483200!1666569600.xml.gz";
+Content-Description: protection.outlook.com!nordible.co!1666483200!1666569600.xml.gz
+Content-Disposition: attachment; filename="protection.outlook.com!nordible.co!1666483200!1666569600.xml.gz";
 
 H4sIAAAAAAAEAM1VzY7bIBi8V+o7RLnXxHZ+VyzbB2jVQy+9WQTjBMUGBDjZvn0/G4JJsu3usZcE5h
 vzDcNg45fXrp2dubFCyed5ni3mL+TzJ9xwXu8pO82gLO3Tq62f50fn9BNCl8slu5SZMgdULBY5+vX9

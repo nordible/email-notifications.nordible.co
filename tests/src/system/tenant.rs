@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: LicenseRef-SEL
  *
- * This file is subject to the Stalwart Enterprise License Agreement (SEL) and
+ * This file is subject to the Nordible Mail Enterprise License Agreement and
  * is NOT open source software.
  *
  */

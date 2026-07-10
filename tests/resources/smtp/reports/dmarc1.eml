@@ -1,14 +1,14 @@
-Received: from mail.stalw.art ([mail.stalw.art])
+Received: from mail.nordible.co ([mail.nordible.co])
 	by 127.0.0.1 (Stalwart JMAP) with LMTP;
 	Mon, 28 Nov 2022 10:51:56 +0000
 Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.stalw.art (Postfix) with ESMTPS id 1145E7CC0B
-	for <domains@stalw.art>; Mon, 28 Nov 2022 10:51:53 +0000 (UTC)
+	by mail.nordible.co (Postfix) with ESMTPS id 1145E7CC0B
+	for <mail@nordible.co>; Mon, 28 Nov 2022 10:51:53 +0000 (UTC)
 Received: by mail-qv1-xf4a.google.com with SMTP id 71-20020a0c804d000000b004b2fb260447so12985969qva.10
-        for <domains@stalw.art>; Mon, 28 Nov 2022 02:51:52 -0800 (PST)
+        for <mail@nordible.co>; Mon, 28 Nov 2022 02:51:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=content-transfer-encoding:content-disposition:to:from:subject
@@ -42,13 +42,13 @@ X-Received: by 2002:ac8:5182:0:b0:39c:cb6a:300b with SMTP id
  Nov 2022 02:51:51 -0800 (PST)
 Date: Sun, 27 Nov 2022 15:59:59 -0800
 Message-ID: <5264580628977113351@google.com>
-Subject: Report domain: stalw.art Submitter: google.com Report-ID: 5264580628977113351
+Subject: Report domain: nordible.co Submitter: google.com Report-ID: 5264580628977113351
 From: noreply-dmarc-support@google.com
-To: domains@stalw.art
+To: mail@nordible.co
 Content-Type: application/zip; 
-	name="google.com!stalw.art!1669507200!1669593599.zip"
+	name="google.com!nordible.co!1669507200!1669593599.zip"
 Content-Disposition: attachment; 
-	filename="google.com!stalw.art!1669507200!1669593599.zip"
+	filename="google.com!nordible.co!1669507200!1669593599.zip"
 Content-Transfer-Encoding: base64
 
 UEsDBAoAAAAIAHFUfFWAeOSU8QEAAKkEAAAuAAAAZ29vZ2xlLmNvbSFzdGFsdy5hcnQhMTY2OTUw

@@ -95,7 +95,7 @@ impl Command<'_> {
                 buf.extend(hostname);
                 buf.push(0x00);
                 buf.push(family);
-                buf.extend(port.to_be_bytes().as_ref());
+                buf.extend(&port.to_be_bytes());
                 buf.extend(address.as_bytes());
                 buf.push(0x00);
                 buf
@@ -168,9 +168,9 @@ impl Command<'_> {
             }
             Command::OptionNegotiation(opt) => {
                 let mut buf = Command::build(SMFIC_OPTNEG, 3 * std::mem::size_of::<u32>() as u32);
-                buf.extend(opt.version.to_be_bytes().as_ref());
-                buf.extend(opt.actions.to_be_bytes().as_ref());
-                buf.extend(opt.protocol.to_be_bytes().as_ref());
+                buf.extend(&opt.version.to_be_bytes());
+                buf.extend(&opt.actions.to_be_bytes());
+                buf.extend(&opt.protocol.to_be_bytes());
                 buf
             }
             Command::Quit => Command::build(SMFIC_QUIT, 0),

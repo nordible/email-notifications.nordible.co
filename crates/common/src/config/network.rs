@@ -189,7 +189,7 @@ impl Network {
             }),
             info: Info {
                 provider: Provider {
-                    name: "Stalwart".into(),
+                    name: "Nordible Mail".into(),
                     ..Default::default()
                 },
                 ..Default::default()

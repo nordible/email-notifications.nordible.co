@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ## [0.16.12] - 2026-06-XX
 
-If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
 
 ## Added
 
@@ -19,7 +19,7 @@ If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If
 
 ## [0.16.11] - 2026-06-25
 
-If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
 
 ## Added
 - Encryption-at-rest: Support for `AES-256-GCM` and `ChaCha20-Poly1305` for S/MIME (#161).
@@ -36,7 +36,7 @@ If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If
 
 ## [0.16.10] - 2026-06-21
 
-If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
 
 ## Added
 - International Domain Names (IDN) support (#207).
@@ -83,7 +83,7 @@ If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If
 
 ## [0.16.9] - 2026-06-15
 
-If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
 
 ## Added
 - ACME: Allow specifying a preferred certificate chain.
@@ -103,7 +103,7 @@ If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If
 
 ## [0.16.8] - 2026-06-06
 
-If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
 
 ## Added
 
@@ -123,7 +123,7 @@ If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If
 
 ## [0.16.7] - 2026-05-28
 
-If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
 
 ## Added
 - RateLimit header fields for HTTP ([draft-ietf-httpapi-ratelimit-headers-10](https://datatracker.ietf.org/doc/html/draft-ietf-httpapi-ratelimit-headers-10))
@@ -144,10 +144,10 @@ If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If
 
 ## [0.16.6] - 2026-05-20
 
-If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
 
 ## Added
-- Added 58 new DNS provider integrations (see [dns-update](https://github.com/stalwartlabs/dns-update/blob/main/CHANGELOG.md#dns-update-040) crate for details).
+- Added 58 new DNS provider integrations (see [dns-update](https://github.com/NordibleMaillabs/dns-update/blob/main/CHANGELOG.md#dns-update-040) crate for details).
 - DNS updater: Log DNS record types and values.
 - Sieve: Allow User Sieve scripts to access `orcpt`.
 - MTA: Log when messages are rejected or discarded by the spam classifier.
@@ -175,7 +175,7 @@ If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If
 
 ## [0.16.5] - 2026-05-11
 
-If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
 
 ## Added
 - `is_ip_in_cidr` expression function for CIDR matching.
@@ -212,7 +212,7 @@ If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If
 
 ## [0.16.4] - 2026-05-05
 
-If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
 
 ## Added
 
@@ -234,12 +234,12 @@ If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If
 
 ## [0.16.3] - 2026-04-30
 
-If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
 
 ## Added
 
 ## Changed
-- Replaced `STALWART_HTTPS_PORT` with `STALWART_PUBLIC_URL`.
+- Replaced `NordibleMail_HTTPS_PORT` with `NordibleMail_PUBLIC_URL`.
 - App Passwords now begin with `app_` instead of `app ` to avoid issues with some clients that do not support spaces in passwords.
 
 ## Fixed
@@ -258,7 +258,7 @@ If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If
 
 ## [0.16.2] - 2026-04-28
 
-If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
 
 ## Added
 - OIDC: Fallback to `userinfo` endpoint when JWT token does not contain an email claim.
@@ -277,7 +277,7 @@ If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If
 
 ## [0.16.1] - 2026-04-25
 
-If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
 
 ## Added
 - OIDC: Extract username from JWT token.
@@ -306,11 +306,11 @@ If you are upgrading from v0.16.x, replace the binary (or run `docker pull`). If
 
 ## [0.16.0] - 2026-04-20
 
-This version includes **multiple breaking changes**. If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
+This version includes **multiple breaking changes**. If you are upgrading from v0.15.x and below, please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_16.md) for more information on how to upgrade from previous versions.
 
 ## Added
-- [Web UI](https://github.com/stalwartlabs/webui) rewritten from the ground up using the JMAP management API, featuring a refreshed design and addressing 76 enhancement requests and bug fixes.
-- [CLI](https://github.com/stalwartlabs/cli) rewritten from the ground up to use the JMAP management API.
+- [Web UI](https://github.com/NordibleMaillabs/webui) rewritten from the ground up using the JMAP management API, featuring a refreshed design and addressing 76 enhancement requests and bug fixes.
+- [CLI](https://github.com/NordibleMaillabs/cli) rewritten from the ground up to use the JMAP management API.
 - Security enhancements:
   - Password strength enforcement using the `zxcvbn` algorithm
   - Password expiration, rotation policies and IP address restrictions for user accounts
@@ -408,7 +408,7 @@ This version includes **multiple breaking changes**. If you are upgrading from v
 
 ## [0.15.5] - 2026-02-14
 
-If you are upgrading from v0.14.x and below, this version includes **multiple breaking changes**. Please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_15.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.14.x and below, this version includes **multiple breaking changes**. Please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_15.md) for more information on how to upgrade from previous versions.
 If you are upgrading from v0.15.x, replace the binary and update the webadmin.
 
 ## Added
@@ -416,7 +416,7 @@ If you are upgrading from v0.15.x, replace the binary and update the webadmin.
 ## Changed
 
 ## Fixed
-- IMAP/JMAP: OOM when `mail-parser` returns cyclical MIME structures [CVE-2026-26312](https://github.com/stalwartlabs/stalwart/security/advisories/GHSA-jm95-876q-c9gw).
+- IMAP/JMAP: OOM when `mail-parser` returns cyclical MIME structures [CVE-2026-26312](https://github.com/NordibleMaillabs/NordibleMail/security/advisories/GHSA-jm95-876q-c9gw).
 - Tracing: Fix tracing indexing when using separate stores.
 - JMAP: Fix `upToId` computation in `*/queryChanges`.
 - JMAP: Include createdIds when the property is present.
@@ -425,7 +425,7 @@ If you are upgrading from v0.15.x, replace the binary and update the webadmin.
 
 ## [0.15.4] - 2026-01-19
 
-If you are upgrading from v0.14.x and below, this version includes **multiple breaking changes**. Please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_15.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.14.x and below, this version includes **multiple breaking changes**. Please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_15.md) for more information on how to upgrade from previous versions.
 If you are upgrading from v0.15.x, replace the binary and update the webadmin.
 
 ## Added
@@ -445,7 +445,7 @@ If you are upgrading from v0.15.x, replace the binary and update the webadmin.
 
 ## [0.15.3] - 2025-12-29
 
-If you are upgrading from v0.14.x and below, this version includes **multiple breaking changes**. Please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_15.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.14.x and below, this version includes **multiple breaking changes**. Please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_15.md) for more information on how to upgrade from previous versions.
 If you are upgrading from v0.15.x, replace the binary and update the webadmin.
 
 ## Added
@@ -462,7 +462,7 @@ If you are upgrading from v0.15.x, replace the binary and update the webadmin.
 
 ## [0.15.2] - 2025-12-22
 
-If you are upgrading from v0.14.x and below, this version includes **multiple breaking changes**. Please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_15.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.14.x and below, this version includes **multiple breaking changes**. Please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_15.md) for more information on how to upgrade from previous versions.
 If you are upgrading from v0.15.x, replace the binary and update the webadmin.
 
 ## Added
@@ -484,7 +484,7 @@ If you are upgrading from v0.15.x, replace the binary and update the webadmin.
 
 ## [0.15.1] - 2025-12-17
 
-This version includes **multiple breaking changes**. If you are upgrading from v0.14.x and below, please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_15.md) for more information on how to upgrade from previous versions.
+This version includes **multiple breaking changes**. If you are upgrading from v0.14.x and below, please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_15.md) for more information on how to upgrade from previous versions.
 
 ## Added
 
@@ -497,7 +497,7 @@ This version includes **multiple breaking changes**. If you are upgrading from v
 
 ## [0.15.0] - 2025-12-16
 
-This version includes **multiple breaking changes**. Please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_15.md) for more information on how to upgrade from previous versions.
+This version includes **multiple breaking changes**. Please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_15.md) for more information on how to upgrade from previous versions.
 
 ## Added
 - Linear spam classifier using FTRL-Proximal and feature/cuckoo hashing.
@@ -524,7 +524,7 @@ This version includes **multiple breaking changes**. Please read the [upgrading 
 
 ## [0.14.1] - 2025-10-28
 
-If you are upgrading from v0.13.4 and below, this version includes **breaking changes** to the internal directory, calendar and contacts. Please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_14.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.13.4 and below, this version includes **breaking changes** to the internal directory, calendar and contacts. Please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_14.md) for more information on how to upgrade from previous versions.
 
 ## Added
 - Autoconfig for CalDAV, CardDAV and WebDAV (#1937)
@@ -538,7 +538,7 @@ If you are upgrading from v0.13.4 and below, this version includes **breaking ch
 
 ## [0.14.0] - 2025-10-22
 
-If you are upgrading from v0.13.4 and below, this version includes **breaking changes** to the internal directory, calendar and contacts. Please read the [upgrading documentation](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING/v0_14.md) for more information on how to upgrade from previous versions.
+If you are upgrading from v0.13.4 and below, this version includes **breaking changes** to the internal directory, calendar and contacts. Please read the [upgrading documentation](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING/v0_14.md) for more information on how to upgrade from previous versions.
 
 ## Added
 - JMAP for Calendars ([draft-ietf-jmap-calendars](https://datatracker.ietf.org/doc/draft-ietf-jmap-calendars/)).
@@ -565,7 +565,7 @@ If you are upgrading from v0.13.4 and below, this version includes **breaking ch
 
 ## [0.13.4] - 2025-09-30
 
-If you are upgrading from v0.11.x or v0.12.x, this version includes **breaking changes** to the message queue and MTA configuration. Please read the [UPGRADING.md](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
+If you are upgrading from v0.11.x or v0.12.x, this version includes **breaking changes** to the message queue and MTA configuration. Please read the [UPGRADING.md](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
 
 ## Added
 
@@ -573,7 +573,7 @@ If you are upgrading from v0.11.x or v0.12.x, this version includes **breaking c
 - JMAP: Protocol layer rewrite for zero-copy deserialization and architectural improvements.
 
 ## Fixed
-- IMAP: Unbounded memory allocation in request parser ([CVE-2025-61600 ](https://github.com/stalwartlabs/stalwart/security/advisories/GHSA-8jqj-qj5p-v5rr)).
+- IMAP: Unbounded memory allocation in request parser ([CVE-2025-61600 ](https://github.com/NordibleMaillabs/NordibleMail/security/advisories/GHSA-8jqj-qj5p-v5rr)).
 - IMAP: Wrong permission checked for GETACL.
 - JMAP: References to previous method fail when there are no results (#1507).
 - JMAP: Enforce quota checks on `Blob/copy`.
@@ -586,7 +586,7 @@ If you are upgrading from v0.11.x or v0.12.x, this version includes **breaking c
 
 ## [0.13.3] - 2025-09-10
 
-If you are upgrading from v0.11.x or v0.12.x, this version includes **breaking changes** to the message queue and MTA configuration. Please read the [UPGRADING.md](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
+If you are upgrading from v0.11.x or v0.12.x, this version includes **breaking changes** to the message queue and MTA configuration. Please read the [UPGRADING.md](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
 
 ## Added
 - CLI: Health checks (contributed by @Codekloeppler)
@@ -609,19 +609,19 @@ If you are upgrading from v0.11.x or v0.12.x, this version includes **breaking c
 - IMAP: Add owner rights to ACL get responses.
 - IMAP: Do not auto-train Bayes when moving messages from Junk to Trash.
 - IMAP/ManageSieve: Increase maximum quoted argument size (#2039).
-- CalDAV: Limit recurrence expansions in calendar reports ([CVE-2025-59045](https://github.com/stalwartlabs/stalwart/security/advisories/GHSA-xv4r-q6gr-6pfg)).
+- CalDAV: Limit recurrence expansions in calendar reports ([CVE-2025-59045](https://github.com/NordibleMaillabs/NordibleMail/security/advisories/GHSA-xv4r-q6gr-6pfg)).
 - WebDAV: Do not fix percent encoding on WebDAV FS (#2036).
 
 ## [0.13.2] - 2025-07-28
 
-If you are upgrading from v0.11.x or v0.12.x, this version includes **breaking changes** to the message queue and MTA configuration. Please read the [UPGRADING.md](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
+If you are upgrading from v0.11.x or v0.12.x, this version includes **breaking changes** to the message queue and MTA configuration. Please read the [UPGRADING.md](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
 
 ## Added
 - ACME: DeSEC cloud DNS provider support (contributed by @Tyr3al).
 - ACME: OVH cloud DNS provider support (contributed by @srachner).
 - CalDAV Scheduling: Catalan language support (contributed by @jolupa) (#1873).
 - MTA: Allow to send e-mails as group, while member of that group (#485).
-- OIDC: Allow local access tokens to be used with third-party OIDC backends (#1311 stalwartlabs/webadmin#52).
+- OIDC: Allow local access tokens to be used with third-party OIDC backends (#1311 NordibleMaillabs/webadmin#52).
 
 ## Changed
 - IMAP: Return `OK` when moving/copying non-existent messages (#670).
@@ -638,7 +638,7 @@ If you are upgrading from v0.11.x or v0.12.x, this version includes **breaking c
 
 ## [0.13.1] - 2025-07-16
 
-If you are upgrading from v0.11.x or v0.12.x, this version includes **breaking changes** to the message queue and MTA configuration. Please read the [UPGRADING.md](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
+If you are upgrading from v0.11.x or v0.12.x, this version includes **breaking changes** to the message queue and MTA configuration. Please read the [UPGRADING.md](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
 
 ## Added
 - ACME: DigitalOcean cloud DNS provider support (#1667).
@@ -653,12 +653,12 @@ If you are upgrading from v0.11.x or v0.12.x, this version includes **breaking c
 
 ## [0.13.0] - 2025-07-15
 
-If you are upgrading from v0.11.x or v0.12.x, this version includes **breaking changes** to the message queue and MTA configuration. Please read the [UPGRADING.md](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
+If you are upgrading from v0.11.x or v0.12.x, this version includes **breaking changes** to the message queue and MTA configuration. Please read the [UPGRADING.md](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
 
 ## Added
 - MTA queue enhancements (#1246 #1035 #457).
 - Danish locale support (contributed by @Fadil2k) (#1772).
-- DKIM support for `stalwart-cli` (contributed by @rmsc) (#1804).
+- DKIM support for `NordibleMail-cli` (contributed by @rmsc) (#1804).
 
 ## Changed
 - Invalidate access token caches in a cluster using pub/sub (#1741).
@@ -676,7 +676,7 @@ If you are upgrading from v0.11.x or v0.12.x, this version includes **breaking c
 
 ## [0.12.5] - 2025-06-25
 
-If you are upgrading from v0.11.x, this version includes **breaking changes** to the database layout and requires a migration. Please read the [UPGRADING.md](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
+If you are upgrading from v0.11.x, this version includes **breaking changes** to the database layout and requires a migration. Please read the [UPGRADING.md](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
 
 ## Added
 - Calendar Scheduling Extensions to CalDAV - RFC6368 (#1514)
@@ -699,14 +699,14 @@ If you are upgrading from v0.11.x, this version includes **breaking changes** to
 
 ## [0.12.4] - 2025-06-03
 
-If you are upgrading from v0.11.x, this version includes **breaking changes** to the database layout and requires a migration. Please read the [UPGRADING.md](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
+If you are upgrading from v0.11.x, this version includes **breaking changes** to the database layout and requires a migration. Please read the [UPGRADING.md](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
 
 ## Added
 - LDAP authentication enhancements (#1269 #1471 #795 #1496).
 - MTA: Return Queue IDs during message acceptance (#927).
 
 ## Changed
-- LDAP: `bind.auth.enable` is now `bind.auth.method`, read the updated [LDAP documentation](https://stalw.art/docs/auth/backend/ldap) for more information.
+- LDAP: `bind.auth.enable` is now `bind.auth.method`, read the updated [LDAP documentation](https://nordible.co/docs/auth/backend/ldap) for more information.
 
 ## Fixed
 - DNS: `hickory-resolver` bug hitting 100% CPU usage when resolving DNSSEC records.
@@ -719,7 +719,7 @@ If you are upgrading from v0.11.x, this version includes **breaking changes** to
 
 ## [0.12.3] - 2025-05-30
 
-If you are upgrading from v0.11.x, this version includes **breaking changes** to the database layout and requires a migration. Please read the [UPGRADING.md](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
+If you are upgrading from v0.11.x, this version includes **breaking changes** to the database layout and requires a migration. Please read the [UPGRADING.md](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
 
 ## Added
 - Store vanished IMAP UIDs and WebDAV paths in the changelog.
@@ -734,7 +734,7 @@ If you are upgrading from v0.11.x, this version includes **breaking changes** to
 
 ## [0.12.2] - 2025-05-27
 
-If you are upgrading from v0.11.x, this version includes **breaking changes** to the database layout and requires a migration. Please read the [UPGRADING.md](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
+If you are upgrading from v0.11.x, this version includes **breaking changes** to the database layout and requires a migration. Please read the [UPGRADING.md](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
 
 ## Added
 - CardDAV: Legacy vCard 2.1 and 3.0 serialization support.
@@ -748,7 +748,7 @@ If you are upgrading from v0.11.x, this version includes **breaking changes** to
 
 ## [0.12.1] - 2025-05-26
 
-If you are upgrading from v0.11.x, this version includes **breaking changes** to the database layout and requires a migration. Please read the [UPGRADING.md](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
+If you are upgrading from v0.11.x, this version includes **breaking changes** to the database layout and requires a migration. Please read the [UPGRADING.md](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
 
 ## Added
 
@@ -761,11 +761,11 @@ If you are upgrading from v0.11.x, this version includes **breaking changes** to
 
 ## [0.12.0] - 2025-05-26
 
-This version includes **breaking changes** to the database layout and requires a migration. Please read the [UPGRADING.md](https://github.com/stalwartlabs/stalwart/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
+This version includes **breaking changes** to the database layout and requires a migration. Please read the [UPGRADING.md](https://github.com/NordibleMaillabs/NordibleMail/blob/main/UPGRADING.md) file for more information on how to upgrade from previous versions.
 
 ### Added
-- [Collaboration](https://stalw.art/docs/collaboration/overview) features including [Calendars over CalDAV](https://stalw.art/docs/http/calendar/), [Contacts over CardDAV](https://stalw.art/docs/http/contact/) and [File Storage over WebDAV](https://stalw.art/docs/http/file-storage/).
-- Peer-to-peer [cluster coordination](https://stalw.art/docs/cluster/coordination/overview) or with Apache Kafka, Redpanda, NATS or Redis.
+- [Collaboration](https://nordible.co/docs/collaboration/overview) features including [Calendars over CalDAV](https://nordible.co/docs/http/calendar/), [Contacts over CardDAV](https://nordible.co/docs/http/contact/) and [File Storage over WebDAV](https://nordible.co/docs/http/file-storage/).
+- Peer-to-peer [cluster coordination](https://nordible.co/docs/cluster/coordination/overview) or with Apache Kafka, Redpanda, NATS or Redis.
 - Incremental caching of emails, calendars, contacts and file metadata.
 - Zero-copy deserialization.
 - Train spam messages as ham when the sender is in the user's address book.  
@@ -775,8 +775,8 @@ This version includes **breaking changes** to the database layout and requires a
 - Add `description` property to OIDC ID token (#1234).
 
 ### Changed
-- Deprecated gossip protocol in favor of the new [coordinator](https://stalw.art/docs/cluster/coordination/overview) options.
-- Renamed Git repository from `stalwartlabs/mail-server` to `stalwartlabs/stalwart` and the Docker image from `stalwartlabs/mail-server` to `stalwartlabs/stalwart`.
+- Deprecated gossip protocol in favor of the new [coordinator](https://nordible.co/docs/cluster/coordination/overview) options.
+- Renamed Git repository from `NordibleMaillabs/mail-server` to `NordibleMaillabs/NordibleMail` and the Docker image from `NordibleMaillabs/mail-server` to `NordibleMaillabs/NordibleMail`.
 - Renamed multiple settings:
   - `server.http.*` to `http.*`.
   - `jmap.folders.*` to `email.folders.*`.
@@ -798,7 +798,7 @@ This version includes **breaking changes** to the database layout and requires a
 
 ## [0.11.8] - 2025-04-30
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin.
 
 ### Added
 
@@ -809,7 +809,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.11.7] - 2025-03-23
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin.
 
 ### Added
 - LDAP attribute to indicate password change (#1156).
@@ -830,7 +830,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.11.5] - 2025-02-01
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin.
 
 ### Added
 
@@ -844,7 +844,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.11.4] - 2025-01-29
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin.
 
 ### Added
 - RFC 9208 - IMAP QUOTA Extension (#484).
@@ -865,7 +865,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.11.2] - 2025-01-17
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin.
 
 ### Added
 - Automatic revoking of access tokens when secrets, permissions, ACLs or group memberships change (#649).
@@ -891,7 +891,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 ## [0.11.0] - 2025-01-06
 
 This version includes breaking changes to the configuration file, please read [UPGRADING.md](UPGRADING.md) for details.
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin.
 
 ### Added
 - Spam filter rewritten in Rust for a significant performance improvement.
@@ -918,7 +918,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.10.7] - 2024-12-04
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin.
 
 ### Added
 - Delivery and DMARC Troubleshooting (#420).
@@ -940,7 +940,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.10.6] - 2024-11-07
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin.
 
 ### Added
 - Enterprise license automatic renewals before expiration (disabled by default).
@@ -954,7 +954,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.10.5] - 2024-10-15
 
-To upgrade replace the `stalwart-mail` binary. 
+To upgrade replace the `NordibleMail-mail` binary. 
 
 ### Added
 - Data store CLI.
@@ -967,7 +967,7 @@ To upgrade replace the `stalwart-mail` binary.
 
 ## [0.10.4] - 2024-10-08
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin. 
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin. 
 
 ### Added
 - Detect and ban port scanners as well as other forms of abuse (#820).
@@ -984,13 +984,13 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.10.3] - 2024-10-07
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin. Enterprise users wishing to use the new LLM-powered spam filter should also upgrade the spam filter rules.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin. Enterprise users wishing to use the new LLM-powered spam filter should also upgrade the spam filter rules.
 
 ### Added
 - AI-powered Spam filtering and Sieve scripting (Enterprise feature).
 
 ### Changed
-- The untrusted Sieve interpreter now has the `vnd.stalwart.expressions` extension enabled by default. This allows Sieve users to use the `eval` function to evaluate expressions in their scripts. If you would like to disable this extension, you can do so by adding `vnd.stalwart.expressions` to `sieve.untrusted.disabled-capabilities`.
+- The untrusted Sieve interpreter now has the `vnd.NordibleMail.expressions` extension enabled by default. This allows Sieve users to use the `eval` function to evaluate expressions in their scripts. If you would like to disable this extension, you can do so by adding `vnd.NordibleMail.expressions` to `sieve.untrusted.disabled-capabilities`.
 
 ### Fixed
 - S3-compatible backends: Retry on `5xx` errors.
@@ -998,7 +998,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.10.2] - 2024-10-02
 
-To upgrade first upgrade the webadmin and then replace the `stalwart-mail` binary. If you read these instructions too late, you can upgrade to the latest web-admin using `curl -k -u admin:yourpass https://yourserver/api/update/webadmin`.
+To upgrade first upgrade the webadmin and then replace the `NordibleMail-mail` binary. If you read these instructions too late, you can upgrade to the latest web-admin using `curl -k -u admin:yourpass https://yourserver/api/update/webadmin`.
 
 ### Added
 - OpenID Connect server (#298).
@@ -1018,7 +1018,7 @@ To upgrade first upgrade the webadmin and then replace the `stalwart-mail` binar
 
 ## [0.10.1] - 2024-09-26
 
-To upgrade replace the `stalwart-mail` binary.
+To upgrade replace the `NordibleMail-mail` binary.
 
 ### Added
 - `OAUTHBEARER` SASL support in all services (#627).
@@ -1048,7 +1048,7 @@ This version includes breaking changes to how accounts are stored. Please read [
 
 ## [0.9.4] - 2024-09-09
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin.
 
 ### Added
 - Support for global Sieve scripts that can be used by users to filter their incoming mail.
@@ -1065,7 +1065,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.9.3] - 2024-08-29
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin.
 
 ### Added
 - Dashboard (Enterprise feature)
@@ -1084,7 +1084,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.9.2] - 2024-08-21
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin.
 
 ### Added
 - Message delivery history (Enterprise feature)
@@ -1102,7 +1102,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.9.1] - 2024-08-08
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin.
 
 ### Added
 - Metrics support (closes #478)
@@ -1123,7 +1123,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.9.0] - 2024-08-01
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin. This version includes breaking changes to the Webhooks configuration and produces a slightly different log output, read [UPGRADING.md](UPGRADING.md) for details.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin. This version includes breaking changes to the Webhooks configuration and produces a slightly different log output, read [UPGRADING.md](UPGRADING.md) for details.
 
 ### Added
 - Improved and faster tracing and logging.
@@ -1137,7 +1137,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.8.5] - 2024-07-07
 
-To upgrade replace the `stalwart-mail` binary.
+To upgrade replace the `NordibleMail-mail` binary.
 
 ### Added
 - Restore deleted e-mails (Enterprise Edition only)
@@ -1152,7 +1152,7 @@ To upgrade replace the `stalwart-mail` binary.
 
 ## [0.8.4] - 2024-07-03
 
-To upgrade replace the `stalwart-mail` binary.
+To upgrade replace the `NordibleMail-mail` binary.
 
 ### Added
 
@@ -1164,7 +1164,7 @@ To upgrade replace the `stalwart-mail` binary.
 
 ## [0.8.3] - 2024-07-01
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin.
 
 ### Added
 - Two-factor authentication with Time-based One-Time Passwords (#436)
@@ -1181,7 +1181,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.8.2] - 2024-06-22
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin and spam filter versions.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin and spam filter versions.
 
 ### Added
 - Webhooks support (#480)
@@ -1202,7 +1202,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.8.1] - 2024-05-23
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin and spam filter versions.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin and spam filter versions.
 
 ### Added
 - POP3 support.
@@ -1255,7 +1255,7 @@ This version uses a different database layout which is incompatible with previou
 
 ## [0.7.3] - 2024-05-01
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin version.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin version.
 
 ### Added
 - Full database export and import functionality
@@ -1274,7 +1274,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.7.2] - 2024-04-17
 
-To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web-admin version.
+To upgrade replace the `NordibleMail-mail` binary and then upgrade to the latest web-admin version.
 
 ### Added
 - Support for `DNS-01` and `HTTP-01` ACME challenges (#226)
@@ -1288,7 +1288,7 @@ To upgrade replace the `stalwart-mail` binary and then upgrade to the latest web
 
 ## [0.7.1] - 2024-04-12
 
-To upgrade replace the `stalwart-mail` binary.
+To upgrade replace the `NordibleMail-mail` binary.
 
 ### Added
 - Make initial admin password configurable via env (#311)
@@ -1343,7 +1343,7 @@ This version introduces breaking changes in the configuration file. Please read 
 Please read the [UPGRADING.md](UPGRADING.md) file for more information on how to upgrade from previous versions.
 
 ### Added
-- Built-in [fail2ban](https://stalw.art/docs/server/fail2ban) and IP address/mask blocking (#164).
+- Built-in [fail2ban](https://nordible.co/docs/server/fail2ban) and IP address/mask blocking (#164).
 - CLI: Read URL and credentials from environment variables (#88).
 - mySQL driver: Add `max-allowed-packet` setting (#201).
 
@@ -1361,9 +1361,9 @@ Please read the [UPGRADING.md](UPGRADING.md) file for more information on how to
 Please read the [UPGRADING.md](UPGRADING.md) file for more information on how to upgrade from previous versions.
 
 ### Added
-- [ACME](https://stalw.art/docs/server/tls/acme) support for automatic TLS certificate generation and renewal (#160).
-- TLS certificate [hot-reloading](https://stalw.art/docs/management/database/maintenance#tls-certificate-reloading).
-- [HAProxy protocol](https://stalw.art/docs/server/proxy) support (#36).
+- [ACME](https://nordible.co/docs/server/tls/acme) support for automatic TLS certificate generation and renewal (#160).
+- TLS certificate [hot-reloading](https://nordible.co/docs/management/database/maintenance#tls-certificate-reloading).
+- [HAProxy protocol](https://nordible.co/docs/server/proxy) support (#36).
 
 ### Changed
 
@@ -1402,7 +1402,7 @@ This version requires a database migration and introduces breaking changes in th
   - Full-text searching con now be done internally or delegated to `ElasticSearch`.
   - Spam databases can now be stored in any of the supported data stores or `Redis`. It is no longer necessary to have an SQL server to use the spam filter.
 - Internal directory: 
-  - User account, groups and mailing lists can now be managed directly from Stalwart without the need of an external LDAP or SQL directory.
+  - User account, groups and mailing lists can now be managed directly from NordibleMail without the need of an external LDAP or SQL directory.
   - HTTP API to manage users, groups, domains and mailing lists.
 - IMAP4rev1 `Recent` flag support, which improves compatibility with old IMAP clients.
 - LDAP bind authentication, to support some LDAP servers such as `lldap` which do not expose the userPassword attribute.
@@ -1474,7 +1474,7 @@ This version introduces some breaking changes in the configuration file. Please 
 - Option to disable ANSI color codes in logs.
 
 ### Changed
-- Querying directories from a Sieve script is now done using the `query()` method from `eval`. Your scripts will need to be updated, please refer to the [new syntax](https://stalw.art/docs/smtp/filter/sieve#directory-queries).
+- Querying directories from a Sieve script is now done using the `query()` method from `eval`. Your scripts will need to be updated, please refer to the [new syntax](https://nordible.co/docs/smtp/filter/sieve#directory-queries).
 
 ### Fixed
 - IPrev lookups of IPv4 mapped to IPv6 addresses.
@@ -1598,10 +1598,10 @@ This version introduces some breaking changes in the configuration file. Please 
 - **S3-compatible** storage.
 
 ### Changed
-- Merged the `stalwart-jmap`, `stalwart-imap` and `stalwart-smtp` repositories into
-  `stalwart-mail`.
+- Merged the `NordibleMail-jmap`, `NordibleMail-imap` and `NordibleMail-smtp` repositories into
+  `NordibleMail-mail`.
 - Removed clustering module and replaced it with a **FoundationDB** backend option.
-- Integrated Stalwart SMTP into Stalwart JMAP.
+- Integrated NordibleMail SMTP into NordibleMail JMAP.
 - Rewritten JMAP protocol parser.
 - Rewritten store backend.
 - Rewritten IMAP server to have direct access to the message store (no more IMAP proxy).

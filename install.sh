@@ -147,7 +147,7 @@ main() {
     say ""
     say "🎉 Installation complete!"
     say ""
-    say "Stalwart is running in bootstrap mode. A temporary administrator"
+    say "Nordible Mail Server is running in bootstrap mode. A temporary administrator"
     say "password was generated at startup and printed to the service logs."
     say ""
     say "👉 To find the password, inspect the service logs:"
@@ -177,13 +177,13 @@ print_usage() {
     cat <<'EOF'
 Usage: install.sh [--fdb] [PREFIX]
 
-Install Stalwart into standard FHS paths or under a custom prefix.
+Install Nordible Mail into standard FHS paths or under a custom prefix.
 
 Options:
   --fdb       Install the FoundationDB build.
   -h, --help  Show this help.
 
-With no PREFIX, Stalwart is installed under standard FHS paths:
+With no PREFIX, Nordible Mail is installed under standard FHS paths:
   binary   /usr/local/bin/stalwart
   config   /etc/stalwart/config.json      (created by the daemon on first run)
   env      /etc/stalwart/stalwart.env
@@ -205,7 +205,7 @@ write_env_file() {
 # Uncomment and edit an entry to override its default.
 
 # Override the hostname used in HTTP responses
-#STALWART_HOSTNAME=mail.example.com
+#STALWART_HOSTNAME=mailadmin.nordible.co
 
 # Override the public base URL published in OAuth, OIDC, and JMAP discovery
 # documents. Accepts scheme, host, optional port, and optional path prefix.
@@ -274,7 +274,7 @@ create_service_linux_systemd() {
     local _bin="$1" _config="$2" _env="$3" _user="$4"
     cat > /etc/systemd/system/stalwart.service <<EOF
 [Unit]
-Description=Stalwart
+Description=Nordible Mail Server
 Conflicts=postfix.service sendmail.service exim4.service
 After=network-online.target
 
@@ -310,8 +310,8 @@ create_service_linux_initd() {
 # Required-Stop:     \$network
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Stalwart Server
-# Description:       Starts and stops the Stalwart Server
+# Short-Description: Nordible Mail Server
+# Description:       Starts and stops the Nordible Mail Server
 # Conflicts:         postfix sendmail
 ### END INIT INFO
 
@@ -359,7 +359,7 @@ do_stop()
 
 case "\$1" in
   start)
-    [ "\$VERBOSE" != no ] && log_daemon_msg "Starting Stalwart Server" "stalwart"
+    [ "\$VERBOSE" != no ] && log_daemon_msg "Starting Nordible Mail Server" "stalwart"
     do_start
     case "\$?" in
         0|1) [ "\$VERBOSE" != no ] && log_end_msg 0 ;;
@@ -367,7 +367,7 @@ case "\$1" in
     esac
     ;;
   stop)
-    [ "\$VERBOSE" != no ] && log_daemon_msg "Stopping Stalwart Server" "stalwart"
+    [ "\$VERBOSE" != no ] && log_daemon_msg "Stopping Nordible Mail Server" "stalwart"
     do_stop
     case "\$?" in
         0|1) [ "\$VERBOSE" != no ] && log_end_msg 0 ;;
@@ -378,7 +378,7 @@ case "\$1" in
     status_of_proc "\$DAEMON" "stalwart" && exit 0 || exit \$?
     ;;
   restart)
-    log_daemon_msg "Restarting Stalwart Server" "stalwart"
+    log_daemon_msg "Restarting Nordible Mail Server" "stalwart"
     do_stop
     case "\$?" in
       0|1)
@@ -424,9 +424,9 @@ create_service_macos() {
 <plist version="1.0">
     <dict>
         <key>Label</key>
-        <string>stalwart</string>
+        <string>nordiblemail</string>
         <key>ServiceDescription</key>
-        <string>Stalwart</string>
+        <string>Nordible Mail</string>
         <key>UserName</key>
         <string>${_user}</string>
         <key>GroupName</key>

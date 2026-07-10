@@ -49,7 +49,7 @@
     <mj-section background-color="white" padding="5px 5px 5px 5px">
       <mj-column>
         <!-- Logo -->
-        <mj-image src="https://stalw.art/img/logo-dark@2x.png" alt="Stalwart Logo" width="200px" align="center" padding-bottom="20px" />
+        <mj-image src="./img/logo-red.svg" alt="Nordible Mail Logo" width="200px" align="center" padding-bottom="20px" />
 
         <!-- Title -->
         <mj-text css-class="event-detail">

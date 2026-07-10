@@ -110,7 +110,7 @@ impl EncryptMessage for Message<'_> {
             outer_message.extend_from_slice(
                 concat!(
                     "\"\r\n\r\n",
-                    "OpenPGP/MIME message (Automatically encrypted by Stalwart)\r\n\r\n",
+                    "OpenPGP/MIME message (Automatically encrypted by Nordible Mail)\r\n\r\n",
                     "--"
                 )
                 .as_bytes(),

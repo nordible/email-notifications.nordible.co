@@ -79,11 +79,11 @@ pub async fn build_data_store(typ: DataStoreType, path: &str) -> DataStore {
             DataStore::PostgreSql(PostgreSqlStore {
                 host: "localhost".into(),
                 port: 5432,
-                auth_username: "stalwart".to_string().into(),
+                auth_username: "nordiblemail".to_string().into(),
                 auth_secret: SecretKeyOptional::Value(SecretKeyValue {
-                    secret: "stalwart".into(),
+                    secret: "nordiblemail".into(),
                 }),
-                database: "stalwart".into(),
+                database: "nordiblemail".into(),
                 use_tls: false,
                 allow_invalid_certs: true,
                 ..Default::default()
@@ -98,7 +98,7 @@ pub async fn build_data_store(typ: DataStoreType, path: &str) -> DataStore {
                 auth_secret: SecretKeyOptional::Value(SecretKeyValue {
                     secret: "password".into(),
                 }),
-                database: "stalwart".into(),
+                database: "nordiblemail".into(),
                 use_tls: false,
                 allow_invalid_certs: true,
                 ..Default::default()

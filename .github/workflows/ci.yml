@@ -336,9 +336,9 @@ jobs:
       - name: Build
         run: |
           rustup target add ${{matrix.target}}
-          cargo build --release --target ${{matrix.target}} -p stalwart --no-default-features --features "sqlite postgres mysql rocks s3 redis azure nats enterprise"
+          cargo build --release --target ${{matrix.target}} -p nordiblemail --no-default-features --features "sqlite postgres mysql rocks s3 redis azure nats enterprise"
           mkdir -p artifacts
-          mv ./target/${{matrix.target}}/release/stalwart.exe ./artifacts/stalwart.exe
+          mv ./target/${{matrix.target}}/release/nordiblemail.exe ./artifacts/nordiblemail.exe
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v7
@@ -374,16 +374,16 @@ jobs:
       #    echo "=== Package contents ==="
       #    pkgutil --payload-files foundationdb.pkg || true
       #    sudo installer -allowUntrusted -verbose -dumplog -pkg foundationdb.pkg -target /
-      #    cargo build --release --target ${{matrix.target}} -p stalwart --no-default-features --features "foundationdb s3 redis nats enterprise"
+      #    cargo build --release --target ${{matrix.target}} -p nordiblemail --no-default-features --features "foundationdb s3 redis nats enterprise"
       #    mkdir -p artifacts
-      #    mv ./target/${{matrix.target}}/release/stalwart ./artifacts/stalwart-foundationdb
+      #    mv ./target/${{matrix.target}}/release/nordiblemail ./artifacts/nordiblemail-foundationdb
 
       - name: Build
         run: |
           rustup target add ${{matrix.target}}
-          cargo build --release --target ${{matrix.target}} -p stalwart --no-default-features --features "sqlite postgres mysql rocks s3 redis azure nats enterprise"
+          cargo build --release --target ${{matrix.target}} -p nordiblemail --no-default-features --features "sqlite postgres mysql rocks s3 redis azure nats enterprise"
           mkdir -p artifacts
-          mv ./target/${{matrix.target}}/release/stalwart ./artifacts/stalwart
+          mv ./target/${{matrix.target}}/release/nordiblemail ./artifacts/nordiblemail
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v7

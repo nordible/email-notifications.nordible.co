@@ -1,4 +1,4 @@
-# Stalwart Security Incident Response Checklist
+# NordibleMail Security Incident Response Checklist
 
 ## Phase 1 : Initial Assessment & Validation
 
@@ -8,7 +8,7 @@
 
 Example:
 
-I've reviewed the security report and confirmed this vulnerability exists in Stalwart version X.Y.Z.
+I've reviewed the security report and confirmed this vulnerability exists in NordibleMail version X.Y.Z.
 
 Assessment of exploitability:
 
@@ -24,7 +24,7 @@ Potential impact:
 
 ### Resources
 
-- [Stalwart Security Policy](https://github.com/stalwartlabs/stalwart/blob/main/SECURITY.md)
+- [NordibleMail Security Policy](https://github.com/NordibleMaillabs/NordibleMail/blob/main/SECURITY.md)
 - [CVE Scoring Calculator](https://nvd.nist.gov/vuln-metrics/cvss/v3-calculator)
 - [Rust Security Advisory Database](https://rustsec.org/)
 
@@ -78,7 +78,7 @@ Working on hotfix for version X.Y.Z. Temporary workaround available by disabling
 
 ### Updates
 
-<< Analysis of potential impact on the Stalwart deployments >>
+<< Analysis of potential impact on the NordibleMail deployments >>
 
 Based on telemetry data and version statistics, approximately X installations may be affected.
 
@@ -123,7 +123,7 @@ Security release vX.Y.Z will be published on YYYY-MM-DD with coordinated disclos
 
 **Communication channels:**
 
-- [ ] Draft announcement for Stalwart community forum/Discord
+- [ ] Draft announcement for NordibleMail community forum/Discord
 - [ ] Prepare release announcement for GitHub
 - [ ] Draft security advisory content
 - [ ] Consider notification to major distributors/packagers
@@ -170,4 +170,4 @@ Security release vX.Y.Z will be published on YYYY-MM-DD with coordinated disclos
 - [ ] 
 
 ## Emergency Contacts
-- **Primary maintainer**: hello@stalw.art
+- **Primary maintainer**: hello@nordible.co

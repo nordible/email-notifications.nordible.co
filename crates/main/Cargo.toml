@@ -1,9 +1,9 @@
 [package]
-name = "stalwart"
-description = "Stalwart Mail and Collaboration Server"
-authors = [ "Stalwart Labs LLC <hello@stalw.art>"]
+name = "nordiblemail"
+description = "Nordible Mail and Collaboration Server"
+authors = [ "Nordible Solutions <mail@nordible.co>"]
 repository = "https://github.com/stalwartlabs/stalwart"
-homepage = "https://stalw.art"
+homepage = "https://nordible.co"
 keywords = ["imap", "jmap", "smtp", "email", "mail", "webdav", "server"]
 categories = ["email"]
 license = "AGPL-3.0-only OR LicenseRef-SEL"
@@ -11,7 +11,7 @@ version = "0.16.12"
 edition = "2024"
 
 [[bin]]
-name = "stalwart"
+name = "nordiblemail"
 path = "src/main.rs"
 
 [dependencies]

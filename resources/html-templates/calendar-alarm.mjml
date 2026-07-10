@@ -25,7 +25,7 @@
   <mj-body background-color="#f4f4f4">
     <mj-section background-color="#ffffff" padding="20px 0">
       <mj-column>
-        <mj-image src="https://stalw.art/img/logo-dark@2x.png" alt="Stalwart Logo" width="200px" align="center" />
+        <mj-image src="./img/logo-red.svg" alt="Nordible Mail Logo" width="200px" align="center" />
       </mj-column>
     </mj-section>
 

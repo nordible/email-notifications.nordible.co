@@ -83,7 +83,7 @@ impl Scripting {
             .with_protected_headers(untrusted.protected_headers)
             .with_vacation_default_subject(untrusted.default_subject)
             .with_vacation_subject_prefix(untrusted.default_subject_prefix)
-            .with_env_variable("name", "Stalwart Server")
+            .with_env_variable("name", "Nordible Mail Server")
             .with_env_variable("version", VERSION_PUBLIC)
             .with_env_variable("location", "MS")
             .with_env_variable("phase", "during");

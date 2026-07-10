@@ -572,7 +572,7 @@ impl Event {
             Event::TrainSpamClassifier => "trainSpamClassifier",
             Event::RenewNodeIdLease => "renewNodeIdLease",
             // SPDX-SnippetBegin
-            // SPDX-FileCopyrightText: 2020 Stalwart Labs LLC <info@stalwartlabs.com>
+            // SPDX-FileCopyrightText: 2020 Nordible Solutions <info@stalwartlabs.com>
             // SPDX-License-Identifier: LicenseRef-SEL
             #[cfg(feature = "enterprise")]
             Event::InternalMetrics => "internalMetrics",

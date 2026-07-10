@@ -8,4 +8,4 @@ run.sh
 !.github
 CLAUDE.md
 
-stalwart-custom.tar
+*.tar

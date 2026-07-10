@@ -1,15 +1,15 @@
-Received: from mail.stalw.art ([mail.stalw.art])
+Received: from mail.nordible.co ([mail.nordible.co])
 	by 127.0.0.1 (Stalwart JMAP) with LMTP;
 	Thu, 10 Nov 2022 03:27:19 +0000
 Received: from mx0.backschues.net (lnxs001.backschues.net [85.183.142.13])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.stalw.art (Postfix) with ESMTPS id 6DD117CC0B
-	for <domains@stalw.art>; Thu, 10 Nov 2022 03:27:16 +0000 (UTC)
+	by mail.nordible.co (Postfix) with ESMTPS id 6DD117CC0B
+	for <mail@nordible.co>; Thu, 10 Nov 2022 03:27:16 +0000 (UTC)
 Received: from mx0.backschues.net (localhost [127.0.0.1])
 	by mx0.backschues.net with SMTP id 4N76hg4lNgz9ryP
-	for <domains@stalw.art>; Thu, 10 Nov 2022 04:27:15 +0100 (CET)
+	for <mail@nordible.co>; Thu, 10 Nov 2022 04:27:15 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=backschues.net;
 	s=mail-2014-01; t=1668050835;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
@@ -28,10 +28,10 @@ DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=backschues.net;
 	b=y7d79OWWCrDX40k91FoBdGnUcrjN7xvWYyqskPfQmMoaSqFNSlTHH8gMXC/vXwiYIP3Oxp
 	d/hVvEuIIQBlwMDQ==
 From: "DMARC Aggregate Report" <noreply-dmarc-support@backschues.net>
-To: domains@stalw.art
-Subject: Report Domain: stalw.art
+To: mail@nordible.co
+Subject: Report Domain: nordible.co
 	Submitter: backschues.net
-	Report-ID: stalw.art.1667948400.1668034800
+	Report-ID: nordible.co.1667948400.1668034800
 Date: Thu, 10 Nov 2022 03:27:02 GMT
 MIME-Version: 1.0
 Message-ID: <afe541eab3ec091f@backschues.net>
@@ -46,15 +46,15 @@ Content-Transfer-Encoding: 7bit
 
 This is an aggregate report from backschues.net.
 
-Report domain: stalw.art
+Report domain: nordible.co
 Submitter: backschues.net
-Report ID: stalw.art.1667948400.1668034800
+Report ID: nordible.co.1667948400.1668034800
 
 ------=_NextPart_84e1fdd0-b285-4922-9fc7-88b070204303
 Content-Type: application/gzip
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment;
-	filename="backschues.net!stalw.art!1667948400!1668034800.xml.gz"
+	filename="backschues.net!nordible.co!1667948400!1668034800.xml.gz"
 
 H4sIAAAAAAAAA5VUsXLbMAzd/RU6D9ksSo6b2heG6dKOndJZR5OQzYtEsiSVNH9fUqQoqXWHT
 gIfgAfgASf8/KvvijcwVij5tK3LaluAZIoLeXna/nj5tjtui2eywS0AP1P2SjZFgQ1oZVzTg6

@@ -72,7 +72,7 @@ Your message could not be delivered to the following recipients:
 Content-Type: message/delivery-status
 Content-Transfer-Encoding: 7bit
 
-Reporting-MTA: dns;mail.stalw.art
+Reporting-MTA: dns;mail.nordible.co
 Arrival-Date: Mon, 3 Jul 2023 16:11:29 +0000
 
 Final-Recipient: rfc822;user@test.com

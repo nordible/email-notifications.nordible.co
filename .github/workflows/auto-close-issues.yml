@@ -33,9 +33,9 @@ jobs:
             const comment = [
               `Hi @${author}, thanks for taking the time to file this report.`,
               ``,
-              `This issue is being **automatically closed** because all bug reports must first be triaged at our support portal: **[support.stalw.art](https://support.stalw.art)**. Please re-post this report there so that a maintainer can review it; once confirmed as a bug, an Issue will be created on your behalf.`,
+              `This issue is being **automatically closed** because all bug reports must first be triaged at our support portal: **[support.mail.nordible.co](https://support.mail.nordible.co)**. Please re-post this report there so that a maintainer can review it; once confirmed as a bug, an Issue will be created on your behalf.`,
               ``,
-              `You can sign in to support.stalw.art with your existing GitHub account, so no separate registration is required.`,
+              `You can sign in to support.mail.nordible.co with your existing GitHub account, so no separate registration is required.`,
               ``,
               `Thank you for understanding.`,
             ].join('\n');

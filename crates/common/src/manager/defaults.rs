@@ -58,7 +58,7 @@ async fn insert_safe_defaults(bp: &mut Bootstrap) -> trc::Result<()> {
             .write(RegistryWrite::insert(
                 &Application {
                     auto_update_frequency: Duration::from_millis(30 * 24 * 60 * 60 * 1000),
-                    description: "Stalwart Web Interface".to_string(),
+                    description: "Nordible Mail Web Interface".to_string(),
                     enabled: true,
                     #[cfg(not(feature = "dev_mode"))]
                     resource_url:

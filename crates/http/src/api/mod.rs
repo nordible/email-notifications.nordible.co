@@ -340,9 +340,9 @@ impl UnauthorizedResponse for HttpResponse {
             HttpResponse::new(StatusCode::UNAUTHORIZED)
                 .with_header(
                     header::WWW_AUTHENTICATE,
-                    "Bearer realm=\"Stalwart Server\", resource_metadata=\"/.well-known/oauth-protected-resource\"",
+                    "Bearer realm=\"Nordible Mail Server\", resource_metadata=\"/.well-known/oauth-protected-resource\"",
                 )
-                .with_header(header::WWW_AUTHENTICATE, "Basic realm=\"Stalwart Server\"")
+                .with_header(header::WWW_AUTHENTICATE, "Basic realm=\"Nordible Mail Server\"")
         } else {
             HttpResponse::new(StatusCode::UNAUTHORIZED)
         })

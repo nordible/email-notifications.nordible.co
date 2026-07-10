@@ -1,8 +1,8 @@
-# Security Policy for Stalwart
+# Security Policy for NordibleMail
 
 ## Supported Versions
 
-We provide security updates for the following versions of Stalwart:
+We provide security updates for the following versions of NordibleMail:
 
 | Version | Supported          | End of Support |
 | ------- | ------------------ | -------------- |
@@ -15,7 +15,7 @@ We provide security updates for the following versions of Stalwart:
 
 ## Reporting a Vulnerability
 
-We take the security of Stalwart very seriously. If you believe you've found a security vulnerability, we encourage you to inform us responsibly through coordinated disclosure.
+We take the security of NordibleMail very seriously. If you believe you've found a security vulnerability, we encourage you to inform us responsibly through coordinated disclosure.
 
 ### How to Report
 
@@ -23,9 +23,9 @@ We take the security of Stalwart very seriously. If you believe you've found a s
 
 Instead, please use one of these secure channels:
 
-1. **Email** (preferred): Send details to `security@stalw.art`
+1. **Email** (preferred): Send details to `security@nordible.co`
 2. **GitHub Security Advisories**: Use the "Report a vulnerability" button in the Security tab
-3. **Backup contact**: If no response within 48 hours, email `hello@stalw.art`
+3. **Backup contact**: If no response within 48 hours, email `hello@nordible.co`
 
 ### What to Include
 
@@ -74,7 +74,7 @@ We follow responsible disclosure principles:
 This security policy applies to:
 
 **In Scope:**
-- Stalwart (all supported versions)
+- NordibleMail (all supported versions)
 - Official Docker images
 - Documentation that could lead to insecure configurations
 - Dependencies with security implications
@@ -96,7 +96,7 @@ This security policy applies to:
 - Security-focused code review process
 
 **User Responsibilities:**
-- Keep Stalwart updated to supported versions
+- Keep NordibleMail updated to supported versions
 - Follow security configuration guidelines
 - Implement proper network security (firewalls, TLS, etc.)
 - Regular security monitoring and logging
@@ -109,10 +109,10 @@ We support security research conducted in good faith. If you follow these guidel
 **We will NOT:**
 - Initiate legal action against you
 - Contact law enforcement about your research
-- Suspend or terminate your access to Stalwart services
+- Suspend or terminate your access to NordibleMail services
 
 **You must:**
-- Only test against your own Stalwart installations
+- Only test against your own NordibleMail installations
 - Not access, modify, or delete user data
 - Not perform testing that could degrade service availability
 - Not publicly disclose the issue before coordinated disclosure
@@ -120,16 +120,16 @@ We support security research conducted in good faith. If you follow these guidel
 
 ## Recognition
 
-We believe in recognizing security researchers who help keep Stalwart secure:
+We believe in recognizing security researchers who help keep NordibleMail secure:
 
 - **Security Advisory Credits**: We'll credit you in our GitHub Security Advisories (unless you prefer to remain anonymous)
 - **Hall of Fame**: Significant contributors may be listed in our security acknowledgments
-- **Swag**: We may send Stalwart merchandise for notable contributions
+- **Swag**: We may send NordibleMail merchandise for notable contributions
 
 ## Security Updates
 
 **Stay Informed:**
-- Subscribe to our [GitHub releases](https://github.com/stalwartlabs/stalwart/releases) for security updates
+- Subscribe to our [GitHub releases](https://github.com/NordibleMaillabs/NordibleMail/releases) for security updates
 - Join our community channels for security announcements
 - Enable GitHub notifications for security advisories
 
@@ -141,14 +141,14 @@ We believe in recognizing security researchers who help keep Stalwart secure:
 
 ## Contact Information
 
-- **Security reports**: security@stalw.art
-- **General inquiries**: hello@stalw.art
+- **Security reports**: security@nordible.co
+- **General inquiries**: hello@nordible.co
 - **PGP Key**: Available upon request for sensitive communications
 
 ## Additional Resources
 
-- [Stalwart Security Incident Response Process](SECURITY_PROCESS.md)
-- [Security Configuration Guide](https://stalw.art/docs/install/security)
+- [NordibleMail Security Incident Response Process](SECURITY_PROCESS.md)
+- [Security Configuration Guide](https://nordible.co/docs/install/security)
 - [Rust Security Advisory Database](https://rustsec.org/)
 
 *This security policy is effective as of June 20, 2025 and may be updated periodically. Check back regularly for updates.*
