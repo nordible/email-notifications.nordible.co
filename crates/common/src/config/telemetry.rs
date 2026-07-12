@@ -544,7 +544,7 @@ impl Tracers {
             }
         } else {
             // Add default tracer if none were found
-            let level = std::env::var("STALWART_RECOVERY_MODE_LOG_LEVEL")
+            let level = std::env::var("NORDIBLEMAIL_RECOVERY_MODE_LOG_LEVEL")
                 .ok()
                 .and_then(|level| Level::from_str(&level).ok())
                 .unwrap_or(Level::Info);
@@ -582,10 +582,10 @@ impl Metrics {
     pub async fn parse(bp: &mut Bootstrap) -> Self {
         let metrics = bp.setting_infallible::<structs::Metrics>().await;
         let resource = Resource::builder()
-            .with_service_name("stalwart")
+            .with_service_name("nordiblemail")
             .with_attribute(KeyValue::new(SERVICE_VERSION, env!("CARGO_PKG_VERSION")))
             .build();
-        let instrumentation = InstrumentationScope::builder("stalwart")
+        let instrumentation = InstrumentationScope::builder("nordiblemail")
             .with_version(env!("CARGO_PKG_VERSION"))
             .build();
 

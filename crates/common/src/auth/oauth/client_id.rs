@@ -13,7 +13,7 @@ use store::blake3;
 use utils::codec::leb128::{Leb128Iterator, Leb128Vec};
 
 const CLIENT_ID_HEADER: &str = "swc1.";
-const CLIENT_ID_KEY_CONTEXT: &str = "stalwart-oauth-client-id-sw1";
+const CLIENT_ID_KEY_CONTEXT: &str = "nordiblemail-oauth-client-id-sw1";
 const CLIENT_ID_VERSION: u8 = 1;
 
 const SCOPE_BITS: &[&str] = &[

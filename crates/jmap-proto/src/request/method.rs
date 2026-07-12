@@ -63,7 +63,7 @@ impl MethodObject {
             | MethodObject::ParticipantIdentity => Capability::Calendars,
             MethodObject::AddressBook | MethodObject::ContactCard => Capability::Contacts,
             MethodObject::FileNode => Capability::FileNode,
-            MethodObject::Registry(_) => Capability::Stalwart,
+            MethodObject::Registry(_) => Capability::NordibleMail,
         }
     }
 }

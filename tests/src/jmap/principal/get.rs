@@ -236,7 +236,7 @@ pub async fn test(test: &TestServer) {
               "webWriteUrlTemplate": null
             },
             "urn:ietf:params:jmap:mail:share": {},
-            "urn:stalwart:jmap": {}
+            "urn:nordiblemail:jmap": {}
           }
         }
       },
@@ -256,7 +256,7 @@ pub async fn test(test: &TestServer) {
         "urn:ietf:params:jmap:principals:availability": john_id,
         "urn:ietf:params:jmap:filenode": john_id,
         "urn:ietf:params:jmap:mail:share": john_id,
-        "urn:stalwart:jmap": john_id
+        "urn:nordiblemail:jmap": john_id
       },
       "username": "jdoe@example.com",
       "apiUrl": "https://127.0.0.1:8899/jmap/",

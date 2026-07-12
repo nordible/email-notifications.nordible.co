@@ -107,7 +107,7 @@ impl RequestHandler for Server {
 
             if !matches!(call.method, RequestMethod::Error(_)) {
                 let capability = call.name.obj.capability();
-                if capability != Capability::Stalwart && !using.contains(capability) {
+                if capability != Capability::NordibleMail && !using.contains(capability) {
                     response.push_response(
                         call.id,
                         MethodName::error(),

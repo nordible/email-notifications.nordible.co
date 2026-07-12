@@ -27,11 +27,11 @@ pub(crate) fn spawn_otel_tracer(builder: SubscriberBuilder, mut otel: OtelTracer
     let (_, mut rx) = builder.register();
     tokio::spawn(async move {
         let resource = Resource::builder()
-            .with_service_name("stalwart")
+            .with_service_name("nordiblemail")
             .with_attribute(KeyValue::new(SERVICE_VERSION, env!("CARGO_PKG_VERSION")))
             .build();
 
-        let instrumentation = InstrumentationScope::builder("stalwart")
+        let instrumentation = InstrumentationScope::builder("nordiblemail")
             .with_version(env!("CARGO_PKG_VERSION"))
             .build();
 

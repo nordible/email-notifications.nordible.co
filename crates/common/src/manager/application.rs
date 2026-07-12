@@ -22,7 +22,7 @@ use store::{
 use trc::{AddContext, Key};
 use types::blob_hash::BlobHash;
 
-const APP_BLOB_PREFIX: &str = "STALWART_APP_";
+const APP_BLOB_PREFIX: &str = "NORDIBLEMAIL_APP_";
 const MAX_APP_SIZE: usize = 100 * 1024 * 1024;
 
 #[allow(clippy::type_complexity)]

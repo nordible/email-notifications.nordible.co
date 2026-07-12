@@ -181,12 +181,12 @@ impl OwnedUri<'_> {
 impl Urn {
     pub fn try_extract_sync_id(token: &str) -> Option<&str> {
         token
-            .strip_prefix("urn:stalwart:davsync:")
+            .strip_prefix("urn:nordiblemail:davsync:")
             .map(|x| x.split_once(':').map(|(x, _)| x).unwrap_or(x))
     }
 
     pub fn parse(input: &str) -> Option<Self> {
-        let inbox = input.strip_prefix("urn:stalwart:")?;
+        let inbox = input.strip_prefix("urn:nordiblemail:")?;
         let (kind, id) = inbox.split_once(':')?;
         match kind {
             "davlock" => u64::from_str_radix(id, 16).ok().map(Urn::Lock),
@@ -223,12 +223,12 @@ impl Urn {
 impl Display for Urn {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Urn::Lock(id) => write!(f, "urn:stalwart:davlock:{id:x}",),
+            Urn::Lock(id) => write!(f, "urn:nordiblemail:davlock:{id:x}",),
             Urn::Sync { id, seq } => {
                 if *seq == 0 {
-                    write!(f, "urn:stalwart:davsync:{id:x}")
+                    write!(f, "urn:nordiblemail:davsync:{id:x}")
                 } else {
-                    write!(f, "urn:stalwart:davsync:{id:x}:{seq:x}")
+                    write!(f, "urn:nordiblemail:davsync:{id:x}:{seq:x}")
                 }
             }
         }

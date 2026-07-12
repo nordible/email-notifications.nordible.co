@@ -120,7 +120,7 @@ impl AccountCapabilities for AccessToken {
                     Capability::WebSocket
                     | Capability::Principals
                     | Capability::PrincipalsAvailability
-                    | Capability::Stalwart => return true,
+                    | Capability::NordibleMail => return true,
                     Capability::Core | Capability::PrincipalsOwner => return false,
                 };
                 self.has_permission(permission)

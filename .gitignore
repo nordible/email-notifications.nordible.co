@@ -9,3 +9,5 @@ run.sh
 CLAUDE.md
 
 *.tar
+
+/data*

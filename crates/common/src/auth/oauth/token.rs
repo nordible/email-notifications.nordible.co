@@ -18,7 +18,7 @@ pub const FAILED_TO_DECODE_TOKEN: &str = concat!(
 );
 
 const TOKEN_HEADER: &str = "sw1.";
-const TOKEN_KEY_CONTEXT: &str = "stalwart-oauth-token-sw1";
+const TOKEN_KEY_CONTEXT: &str = "nordiblemail-oauth-token-sw1";
 const OAUTH_EPOCH: u64 = 946684800; // Jan 1, 2000
 
 pub struct TokenInfo {

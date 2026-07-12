@@ -89,8 +89,8 @@ pub enum Capability {
     FileNode = 1 << 15,
     #[serde(rename(serialize = "urn:ietf:params:jmap:mail:share"))]
     MailShare = 1 << 16,
-    #[serde(rename(serialize = "urn:stalwart:jmap"))]
-    Stalwart = 1 << 17,
+    #[serde(rename(serialize = "urn:nordiblemail:jmap"))]
+    NordibleMail = 1 << 17,
 }
 
 #[derive(Debug, Clone, Copy, Default)]
@@ -320,7 +320,7 @@ impl Capability {
             Capability::PrincipalsAvailability => "urn:ietf:params:jmap:principals:availability",
             Capability::FileNode => "urn:ietf:params:jmap:filenode",
             Capability::MailShare => "urn:ietf:params:jmap:mail:share",
-            Capability::Stalwart => "urn:stalwart:jmap",
+            Capability::NordibleMail => "urn:nordiblemail:jmap",
         }
     }
 
@@ -342,7 +342,7 @@ impl Capability {
             Capability::PrincipalsAvailability,
             Capability::FileNode,
             Capability::MailShare,
-            Capability::Stalwart,
+            Capability::NordibleMail,
         ]
     }
 }
@@ -392,7 +392,7 @@ impl Session {
 impl Default for SieveSessionCapabilities {
     fn default() -> Self {
         Self {
-            implementation: "Stalwart v1.0.0",
+            implementation: "NordibleMail v1.0.0",
         }
     }
 }
@@ -462,7 +462,8 @@ impl Capability {
             "urn:ietf:params:jmap:contacts:parse" => Capability::ContactsParse,
             "urn:ietf:params:jmap:calendars:parse" => Capability::CalendarsParse,
             "urn:ietf:params:jmap:mail:share" => Capability::MailShare,
-            "urn:stalwart:jmap" => Capability::Stalwart,
+            "urn:nordiblemail:jmap" => Capability::NordibleMail,
+            "urn:stalwart:jmap" => Capability::NordibleMail,
         )
     }
 }

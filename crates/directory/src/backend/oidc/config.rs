@@ -33,7 +33,7 @@ impl OpenIdDirectory {
 
     pub async fn new(config: OidcConfig) -> Result<Self, OidcError> {
         let http = Client::builder()
-            .user_agent("Stalwart/1.0")
+            .user_agent("NordibleMail/1.0")
             .timeout(Duration::from_secs(30))
             .build()
             .map_err(|e| OidcError::Network(format!("HTTP client build failed: {e}")))?;

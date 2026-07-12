@@ -493,9 +493,9 @@ async fn insert_safe_defaults(bp: &mut Bootstrap) -> trc::Result<()> {
                 &Tracer::Log(TracerLog {
                     enable: true,
                     ansi: false,
-                    prefix: "stalwart.log".into(),
+                    prefix: "nordiblemail.log".into(),
                     rotate: LogRotateFrequency::Daily,
-                    path: "/var/log/stalwart".into(),
+                    path: "/var/log/nordiblemail".into(),
                     ..Default::default()
                 })
                 .into(),

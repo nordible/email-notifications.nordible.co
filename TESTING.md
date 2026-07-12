@@ -3,10 +3,11 @@
 This document lists the critical features in this repository to test both locally and on the production server (`150.241.247.99`).
 
 ## 1. Branding & Whitelabelling (Logo Fixes)
-- [ ] **First-stage Login Logo**: Visit the OAuth2/OIDC login page (`/account/login` or via the webmail redirect) and verify that the logo is loaded correctly on the username input step.
-- [ ] **Admin Login Logo**: Visit the admin interface login page (`/admin/login`) and verify the logo resolves to `logo.png` (or `/logo` if custom).
-- [ ] **Local Verification**: Verify `http://localhost:8080/admin/logo.png` returns the PNG image (83 KB) rather than falling back to `text/html`.
-- [ ] **Production Verification**: Verify `https://mailadmin.nordible.co/admin/logo.png` also returns the image correctly.
+- [x] **First-stage Login Logo**: Visit the OAuth2/OIDC login page (`/account/login` or via the webmail redirect) and verify that the logo is loaded correctly on the username input step.
+- [x] **Admin Login Logo**: Visit the admin interface login page (`/admin/login`) and verify the logo resolves to `logo.png` (or `/logo` if custom).
+- [x] **Local Verification**: Verify `http://localhost:8080/admin/logo.png` returns the PNG image (83 KB) rather than falling back to `text/html`.
+- [x] **Production Verification**: Verify `https://mailadmin.nordible.co/admin/logo.png` also returns the image correctly.
+
 
 ## 2. Authentication & Admin Panel
 - [ ] **Admin Authentication**: Log in to the administrator portal (`/admin`) using admin credentials.

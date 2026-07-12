@@ -725,7 +725,7 @@ impl Pickle for AddressBook {
 impl Default for AddressBook {
     fn default() -> Self {
         Self {
-            default_display_name: Some("Stalwart Address Book".to_string()),
+            default_display_name: Some("NordibleMail Address Book".to_string()),
             default_href_name: Some("default".to_string()),
             max_v_card_size: 524288u64,
             max_address_books: Some(250u64),
@@ -4121,7 +4121,7 @@ impl Default for Bootstrap {
             request_tls_certificate: true,
             generate_dkim_keys: true,
             data_store: DataStore::RocksDb(RocksDbStore {
-                path: "/var/lib/stalwart/".to_string(),
+                path: "/var/lib/nordiblemail/".to_string(),
                 ..Default::default()
             }),
             blob_store: BlobStore::Default,
@@ -4129,7 +4129,7 @@ impl Default for Bootstrap {
             in_memory_store: InMemoryStore::Default,
             directory: DirectoryBootstrap::Internal,
             tracer: Tracer::Log(TracerLog {
-                path: "/var/log/stalwart/".to_string(),
+                path: "/var/log/nordiblemail/".to_string(),
                 ..Default::default()
             }),
             dns_server: DnsServerBootstrap::Manual,
@@ -4573,7 +4573,7 @@ impl Pickle for Calendar {
 impl Default for Calendar {
     fn default() -> Self {
         Self {
-            default_display_name: Some("Stalwart Calendar".to_string()),
+            default_display_name: Some("NordibleMail Calendar".to_string()),
             default_href_name: Some("default".to_string()),
             max_attendees: 20u64,
             max_recurrence_expansions: 3000u64,
@@ -4710,7 +4710,7 @@ impl Default for CalendarAlarm {
             allow_external_rcpts: false,
             enable: true,
             from_email: Default::default(),
-            from_name: "Stalwart Calendar".to_string(),
+            from_name: "NordibleMail Calendar".to_string(),
             min_trigger_interval: Duration::from_millis(3600000),
             template: Default::default(),
         }
@@ -28124,7 +28124,7 @@ impl MtaStageConnect {
         ExpressionContext {
             expr: &self.smtp_greeting,
             default: Some(Expression {
-                else_: "system('hostname') + ' Stalwart ESMTP at your service'".to_string(),
+                else_: "system('hostname') + ' NordibleMail ESMTP at your service'".to_string(),
                 ..Default::default()
             }),
             property: Property::SmtpGreeting,
@@ -28188,7 +28188,7 @@ impl Default for MtaStageConnect {
     fn default() -> Self {
         Self {
             smtp_greeting: Expression {
-                else_: "system('hostname') + ' Stalwart ESMTP at your service'".to_string(),
+                else_: "system('hostname') + ' NordibleMail ESMTP at your service'".to_string(),
                 ..Default::default()
             },
             hostname: Expression {
@@ -29436,8 +29436,8 @@ impl Default for MySqlSettings {
         Self {
             host: Default::default(),
             port: 3306u64,
-            database: "stalwart".to_string(),
-            auth_username: Some("stalwart".to_string()),
+            database: "nordiblemail".to_string(),
+            auth_username: Some("nordiblemail".to_string()),
             auth_secret: Default::default(),
         }
     }
@@ -29594,8 +29594,8 @@ impl Default for MySqlStore {
             read_replicas: Default::default(),
             host: Default::default(),
             port: 3306u64,
-            database: "stalwart".to_string(),
-            auth_username: Some("stalwart".to_string()),
+            database: "nordiblemail".to_string(),
+            auth_username: Some("nordiblemail".to_string()),
             auth_secret: Default::default(),
         }
     }
@@ -29756,7 +29756,7 @@ impl Default for NatsCoordinator {
             no_echo: true,
             use_tls: false,
             auth_secret: Default::default(),
-            auth_username: Some("stalwart".to_string()),
+            auth_username: Some("nordiblemail".to_string()),
             credentials: Default::default(),
         }
     }
@@ -30321,7 +30321,7 @@ impl Default for OidcDirectory {
         Self {
             description: Default::default(),
             issuer_url: Default::default(),
-            require_audience: Some("stalwart".to_string()),
+            require_audience: Some("nordiblemail".to_string()),
             require_scopes: Map::new(vec!["openid".to_string(), "email".to_string()]),
             claim_username: "preferred_username".to_string(),
             username_domain: Default::default(),
@@ -30936,8 +30936,8 @@ impl Default for PostgreSqlSettings {
         Self {
             host: Default::default(),
             port: 5432u64,
-            database: "stalwart".to_string(),
-            auth_username: Some("stalwart".to_string()),
+            database: "nordiblemail".to_string(),
+            auth_username: Some("nordiblemail".to_string()),
             auth_secret: Default::default(),
             options: Default::default(),
         }
@@ -31081,8 +31081,8 @@ impl Default for PostgreSqlStore {
             read_replicas: Default::default(),
             host: Default::default(),
             port: 5432u64,
-            database: "stalwart".to_string(),
-            auth_username: Some("stalwart".to_string()),
+            database: "nordiblemail".to_string(),
+            auth_username: Some("nordiblemail".to_string()),
             auth_secret: Default::default(),
             options: Default::default(),
         }
@@ -32205,7 +32205,7 @@ impl Default for RedisClusterStore {
         Self {
             urls: Map::new(vec!["redis://127.0.0.1".to_string()]),
             timeout: Duration::from_millis(10000),
-            auth_username: Some("stalwart".to_string()),
+            auth_username: Some("nordiblemail".to_string()),
             auth_secret: Default::default(),
             max_retry_wait: Default::default(),
             min_retry_wait: Default::default(),
@@ -32372,7 +32372,7 @@ impl Default for RedisSentinelStore {
             urls: Map::new(vec!["redis://127.0.0.1:26379".to_string()]),
             service_name: "mymaster".to_string(),
             timeout: Duration::from_millis(10000),
-            auth_username: Some("stalwart".to_string()),
+            auth_username: Some("nordiblemail".to_string()),
             auth_secret: Default::default(),
             sentinel_username: Default::default(),
             sentinel_secret: Default::default(),
@@ -45872,7 +45872,7 @@ impl Default for TracerLog {
     fn default() -> Self {
         Self {
             path: Default::default(),
-            prefix: "stalwart".to_string(),
+            prefix: "nordiblemail".to_string(),
             rotate: LogRotateFrequency::Daily,
             ansi: true,
             multiline: false,
