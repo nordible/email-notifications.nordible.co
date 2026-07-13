@@ -140,6 +140,19 @@ Install NordibleMail on your server by following the instructions for your platf
 
 All documentation is available at [nordible.co/docs](https://nordible.co/docs/install/get-started).
 
+## Deployment
+
+Deploy the server using `cargo-make`:
+
+1. **Install `cargo-make`** (one-time setup):
+   ```bash
+   cargo install cargo-make
+   ```
+2. **Run the deployment**:
+   ```bash
+   cargo make deploy
+   ```
+
 ## Support
 
 If you are having problems running NordibleMail, found a bug, or just have a question, please head to the [NordibleMail Support Portal](https://support.nordible.co) at [support.nordible.co](https://support.nordible.co). 
