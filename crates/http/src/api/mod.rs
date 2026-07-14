@@ -69,6 +69,13 @@ impl ManagementApi for Server {
 
         match path.first().copied().unwrap_or_default() {
             "signup" if is_post => {
+                let expected_key = std::env::var("STALWART_API_KEY").unwrap_or_else(|_| "secret-fallback-key-123".to_string());
+                if req.headers().get("X-API-Key").and_then(|v| v.to_str().ok()) != Some(&expected_key) {
+                    return Ok(HttpResponse::new(StatusCode::UNAUTHORIZED)
+                        .with_content_type("application/problem+json")
+                        .with_text_body(serde_json::to_string(&RequestError::unauthorized()).unwrap_or_default()));
+                }
+
                 self.is_http_anonymous_request_allowed(session.remote_ip)
                     .await?;
                 Box::pin(handle_signup_request(
@@ -358,6 +365,8 @@ struct SignupRequest {
     domain_name: String,
     admin_username: String,
     admin_password: String,
+    dkim_selector: Option<String>,
+    dkim_private_key: Option<String>,
 }
 
 pub async fn handle_signup_request(
@@ -450,6 +459,33 @@ pub async fn handle_signup_request(
             id: Some(account_id),
         })
         .await?;
+
+    if let (Some(selector), Some(private_key)) = (request.dkim_selector, request.dkim_private_key) {
+        let dkim_id = types::id::Id::new(server.registry().assign_id());
+        let dkim_sig = registry::schema::structs::DkimSignature::Dkim1RsaSha256(
+            registry::schema::structs::Dkim1Signature {
+                domain_id,
+                member_tenant_id: Some(tenant_id),
+                selector: selector.trim().to_string(),
+                private_key: registry::schema::structs::SecretText::Text(
+                    registry::schema::structs::SecretTextValue {
+                        secret: private_key.trim().to_string(),
+                    }
+                ),
+                created_at: registry::types::datetime::UTCDateTime::now(),
+                stage: registry::schema::enums::DkimRotationStage::Active,
+                canonicalization: registry::schema::enums::DkimCanonicalization::RelaxedSimple,
+                ..Default::default()
+            }
+        );
+
+        server.registry()
+            .write(store::registry::write::RegistryWrite::Insert {
+                object: &dkim_sig.into(),
+                id: Some(dkim_id),
+            })
+            .await?;
+    }
 
     let resp = serde_json::json!({
         "success": true,

@@ -21,6 +21,34 @@ security:
   - bearerAuth: []
   - basicAuth: []
 paths:
+  /api/signup:
+    post:
+      operationId: signup
+      summary: Register a new tenant, domain, and administrator account
+      description: |
+        Creates a new tenant, registers the specified domain, and provisions
+        the initial administrator account in a single transaction. Rate-limited.
+      tags: [Account]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '200':
+          description: Tenant, domain, and account successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignupResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
   /api/auth:
     post:
       operationId: login
@@ -420,6 +448,36 @@ components:
             $ref: '#/components/schemas/ProblemDetails'
 
   schemas:
+    SignupRequest:
+      type: object
+      required: [tenantName, domainName, adminUsername, adminPassword]
+      properties:
+        tenantName:
+          type: string
+          description: The name of the organization or tenant
+        domainName:
+          type: string
+          format: hostname
+          description: The domain name to register
+        adminUsername:
+          type: string
+          description: The local part of the administrator email address (e.g., admin)
+        adminPassword:
+          type: string
+          format: password
+          description: Password for the administrator account
+    SignupResponse:
+      type: object
+      required: [success, username]
+      properties:
+        success:
+          type: boolean
+          example: true
+        username:
+          type: string
+          example: admin@example.com
+          description: The fully qualified email address of the created administrator
+
     LoginRequest:
       type: object
       description: |
