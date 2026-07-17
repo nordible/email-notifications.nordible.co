@@ -147,7 +147,9 @@ impl Server {
         let mut domain_id = u32::MAX;
         let mut tenant_id = None;
         if let Some((d_id, t_id)) = self.domain(domain).await?.map(|d| (d.id, d.id_tenant))
-            && let Some(domain_record) = self.registry().object::<Domain>(d_id.into()).await?
+            && let Some(domain_record) = self.registry().list::<Domain>().await?.into_iter()
+                .find(|d| d.id.id().document_id() == d_id)
+                .map(|d| d.object)
         {
             logo_url = domain_record.logo;
             domain_id = d_id;
@@ -158,9 +160,11 @@ impl Server {
             {
                 logo_url = self
                     .registry()
-                    .object::<Tenant>(tenant_id.into())
+                    .list::<Tenant>()
                     .await?
-                    .and_then(|t| t.logo);
+                    .into_iter()
+                    .find(|t| t.id.id().document_id() == tenant_id)
+                    .and_then(|t| t.object.logo);
             }
         } else {
             domain = "*";

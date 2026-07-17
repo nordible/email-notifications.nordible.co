@@ -377,7 +377,13 @@ impl RegistrySet for Server {
                         // Add tenantId for tenant filtered objects
                         if is_tenant_filtered && let Some(tenant_id) = set.access_token.tenant_id()
                         {
-                            new_object.inner.set_member_tenant_id(tenant_id.into());
+                            let mut resolved_tenant_id = None;
+                            if let Ok(tenants) = self.registry().list::<registry::schema::structs::Tenant>().await {
+                                if let Some(tenant) = tenants.into_iter().find(|t| t.id.id().document_id() == tenant_id) {
+                                    resolved_tenant_id = Some(tenant.id.id());
+                                }
+                            }
+                            new_object.inner.set_member_tenant_id(resolved_tenant_id.unwrap_or_else(|| Id::new(tenant_id as u64)));
                         }
 
                         // Add accountId
@@ -650,9 +656,9 @@ impl RegistrySet for Server {
                         .caused_by(trc::location!())?
                         .filter(|object| {
                             !((is_tenant_filtered
-                                && access_token.tenant_id().map(Id::from)
-                                    != object.inner.member_tenant_id())
-                                || (is_account_filtered
+                                && access_token.tenant_id()
+                                    != object.inner.member_tenant_id().map(|id| id.document_id()))
+                                || (is_account_filtered && object_type != ObjectType::Account
                                     && object.inner.account_id() != Some(Id::from(set.account_id))))
                         })
                     {
@@ -698,6 +704,41 @@ impl RegistrySet for Server {
 
                 // Finalize cache invalidation
                 self.invalidate_caches(cache_invalidator).await?;
+
+                // Sync billing subscription quantity if accounts were created/destroyed
+                if object_type == ObjectType::Account && (!set.response.created.is_empty() || !set.response.destroyed.is_empty()) {
+                    if let Some(tenant_id) = access_token.tenant_id() {
+                        let server = self.clone();
+                        tokio::spawn(async move {
+                            use registry::types::EnumImpl;
+                            if let Ok(tenants) = server.registry().list::<registry::schema::structs::Tenant>().await {
+                                if let Some(tenant_obj) = tenants.into_iter()
+                                    .find(|t| t.id.id().document_id() == tenant_id)
+                                    .map(|t| t.object) {
+                                    if let Some(subscription_id) = tenant_obj.logo.as_ref().filter(|s| !s.is_empty()) {
+                                        // Count active user accounts for this tenant
+                                        let query = store::registry::RegistryQuery::new(registry::schema::prelude::ObjectType::Account).with_tenant(Some(tenant_id));
+                                        if let Ok(accounts) = server.registry().query::<Vec<Id>>(query.equal(registry::schema::prelude::Property::Type, registry::schema::enums::AccountType::User.to_id())).await {
+                                            let count = accounts.len();
+                                            let client = reqwest::Client::new();
+                                            let api_key = std::env::var("STALWART_API_KEY").unwrap_or_else(|_| "secret-fallback-key-123".to_string());
+                                            let update_url = std::env::var("BILLING_UPDATE_QUANTITY_URL")
+                                                .unwrap_or_else(|_| "https://email.nordible.co/api/subscription/update-quantity".to_string());
+                                            let _ = client.post(&update_url)
+                                                .header("X-API-Key", api_key)
+                                                .json(&serde_json::json!({
+                                                    "subscriptionId": subscription_id,
+                                                    "quantity": count
+                                                }))
+                                                .send()
+                                                .await;
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
 
                 Ok(set.into_response())
             }

@@ -1325,6 +1325,7 @@ dependencies = [
  "reqwest 0.13.4",
  "ring",
  "rkyv",
+ "roaring",
  "rsa",
  "rustls",
  "rustls-pemfile",

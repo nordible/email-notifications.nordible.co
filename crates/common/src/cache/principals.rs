@@ -139,7 +139,15 @@ impl Server {
                     Key = domain_id,
                     Collection = "domainId",
                 );
-                let Some(domain) = self.registry().object::<Domain>(domain_id.into()).await? else {
+                println!("[STALWART AUTH DEBUG] domain_by_id called with: {}", domain_id);
+                let domains = self.registry().list::<Domain>().await?;
+                for d in &domains {
+                    println!("[STALWART AUTH DEBUG] List Domain: ID={:?}, doc_id={}", d.id.id(), d.id.id().document_id());
+                }
+                let Some(domain) = domains.into_iter()
+                    .find(|d| d.id.id().document_id() == domain_id)
+                    .map(|d| d.object) else {
+                    println!("[STALWART AUTH DEBUG] domain_by_id: Domain not found in list!");
                     return Ok(None);
                 };
                 let mut flags = 0;
@@ -366,8 +374,9 @@ impl Server {
                     Collection = "account",
                 );
 
-                let Some(account) = self.registry().object::<Account>(account_id.into()).await?
-                else {
+                let Some(account) = self.registry().list::<Account>().await?.into_iter()
+                    .find(|a| a.id.id().document_id() == account_id)
+                    .map(|a| a.object) else {
                     return Ok(None);
                 };
 
@@ -701,7 +710,9 @@ impl Server {
             Err(guard) => {
                 trc::event!(Store(StoreEvent::CacheMiss), Key = id, Collection = "role");
 
-                let Some(role) = self.registry().object::<Role>(id.into()).await? else {
+                let Some(role) = self.registry().list::<Role>().await?.into_iter()
+                    .find(|r| r.id.id().document_id() == id)
+                    .map(|r| r.object) else {
                     return Err(trc::AuthEvent::Error
                         .into_err()
                         .details("Role not found.")
@@ -747,7 +758,9 @@ impl Server {
                     Collection = "tenant"
                 );
 
-                let Some(tenant) = self.registry().object::<Tenant>(id.into()).await? else {
+                let Some(tenant) = self.registry().list::<Tenant>().await?.into_iter()
+                    .find(|t| t.id.id().document_id() == id)
+                    .map(|t| t.object) else {
                     return Err(trc::AuthEvent::Error
                         .into_err()
                         .details("Tenant not found.")
@@ -814,7 +827,9 @@ impl Server {
             Err(guard) => {
                 trc::event!(Store(StoreEvent::CacheMiss), Key = id, Collection = "list");
 
-                let Some(list) = self.registry().object::<MailingList>(id.into()).await? else {
+                let Some(list) = self.registry().list::<MailingList>().await?.into_iter()
+                    .find(|l| l.id.id().document_id() == id)
+                    .map(|l| l.object) else {
                     return Ok(None);
                 };
                 let cache =

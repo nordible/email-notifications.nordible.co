@@ -28,6 +28,21 @@ use types::id::Id;
 
 impl RegistryStore {
     pub async fn query<T: RegistryQueryResults>(&self, query: RegistryQuery) -> trc::Result<T> {
+        let mut query = query;
+        for filter in &mut query.filters {
+            if filter.property == Property::MemberTenantId {
+                if let RegistryFilterValue::U64(tenant_id) = &mut filter.value {
+                    if *tenant_id <= u32::MAX as u64 {
+                        if let Ok(tenants) = self.list::<registry::schema::structs::Tenant>().await {
+                            if let Some(tenant) = tenants.into_iter().find(|t| t.id.id().document_id() == *tenant_id as u32) {
+                                *tenant_id = tenant.id.id().id();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         if query.filters.is_empty() {
             return all_ids::<T>(&self.0.store, query).await;
         }

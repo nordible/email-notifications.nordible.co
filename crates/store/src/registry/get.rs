@@ -5,7 +5,9 @@
  */
 
 use crate::{
-    IterateParams, RegistryStore, SUBSPACE_REGISTRY, U16_LEN, U64_LEN, ValueKey,
+    IterateParams, RegistryStore, SUBSPACE_REGISTRY, SUBSPACE_DIRECTORY, SUBSPACE_DELETED_ITEMS,
+    SUBSPACE_SPAM_SAMPLES, SUBSPACE_TELEMETRY_SPAN, SUBSPACE_TELEMETRY_METRIC,
+    SUBSPACE_REPORT_IN, SUBSPACE_REPORT_OUT, U16_LEN, U64_LEN, ValueKey,
     registry::{RegistryObject, local::RegistryInit},
     write::{
         AnyClass, RegistryClass, ValueClass,
@@ -55,6 +57,25 @@ impl RegistryStore {
 
     pub async fn list<T: ObjectImpl + From<Object>>(&self) -> trc::Result<Vec<RegistryObject<T>>> {
         let object_type = T::OBJECT;
+        let subspace = match object_type {
+            ObjectType::Account
+            | ObjectType::Domain
+            | ObjectType::Tenant
+            | ObjectType::Role
+            | ObjectType::OAuthClient
+            | ObjectType::MailingList
+            | ObjectType::MaskedEmail
+            | ObjectType::PublicKey => SUBSPACE_DIRECTORY,
+            ObjectType::ArchivedItem => SUBSPACE_DELETED_ITEMS,
+            ObjectType::SpamTrainingSample => SUBSPACE_SPAM_SAMPLES,
+            ObjectType::Trace => SUBSPACE_TELEMETRY_SPAN,
+            ObjectType::Metric => SUBSPACE_TELEMETRY_METRIC,
+            ObjectType::ArfExternalReport
+            | ObjectType::DmarcExternalReport
+            | ObjectType::TlsExternalReport => SUBSPACE_REPORT_IN,
+            ObjectType::DmarcInternalReport | ObjectType::TlsInternalReport => SUBSPACE_REPORT_OUT,
+            _ => SUBSPACE_REGISTRY,
+        };
 
         let mut results = Vec::new();
         self.0
@@ -62,13 +83,13 @@ impl RegistryStore {
             .iterate(
                 IterateParams::new(
                     ValueKey::from(ValueClass::Any(AnyClass {
-                        subspace: SUBSPACE_REGISTRY,
+                        subspace,
                         key: KeySerializer::new(U16_LEN)
                             .write(object_type.to_id())
                             .finalize(),
                     })),
                     ValueKey::from(ValueClass::Any(AnyClass {
-                        subspace: SUBSPACE_REGISTRY,
+                        subspace,
                         key: KeySerializer::new(U16_LEN + U64_LEN)
                             .write(object_type.to_id())
                             .write(u64::MAX)

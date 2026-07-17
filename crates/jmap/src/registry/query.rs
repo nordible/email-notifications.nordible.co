@@ -174,7 +174,7 @@ impl RegistryQuery for Server {
                 let mut query = store::registry::RegistryQuery::new(object_type)
                     .with_tenant(access_token.tenant_id());
                 let can_impersonate = access_token.has_permission(Permission::Impersonate);
-                if !can_impersonate {
+                if !can_impersonate && object_type.flags() & registry::schema::prelude::OBJ_FILTER_ACCOUNT != 0 {
                     query = query.with_account(request.account_id.document_id());
                 }
                 let indexes = object_type.indexes();

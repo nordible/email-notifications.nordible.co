@@ -218,9 +218,9 @@ impl RegistryGet for Server {
                         .caused_by(trc::location!())?
                     {
                         if (is_tenant_filtered
-                            && access_token.tenant_id().map(Id::from)
-                                != object.inner.member_tenant_id())
-                            || (is_account_filtered
+                            && access_token.tenant_id()
+                                != object.inner.member_tenant_id().map(|id| id.document_id()))
+                            || (is_account_filtered && object_type != ObjectType::Account
                                 && object.inner.account_id() != Some(Id::from(get.account_id)))
                         {
                             get.not_found(id);

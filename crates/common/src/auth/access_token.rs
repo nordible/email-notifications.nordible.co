@@ -284,8 +284,9 @@ impl Server {
                     Collection = "accessToken",
                 );
 
-                let token: Arc<AccessTokenInner> = if let Some(account) =
-                    self.registry().object::<Account>(account_id.into()).await?
+                let token: Arc<AccessTokenInner> = if let Some(account) = self.registry().list::<Account>().await?.into_iter()
+                    .find(|a| a.id.id().document_id() == account_id)
+                    .map(|a| a.object)
                 {
                     let revision = rand::random::<u64>();
                     let revision_account = hash_account(&account);

@@ -367,6 +367,7 @@ struct SignupRequest {
     admin_password: String,
     dkim_selector: Option<String>,
     dkim_private_key: Option<String>,
+    subscription_id: Option<String>,
 }
 
 pub async fn handle_signup_request(
@@ -402,6 +403,7 @@ pub async fn handle_signup_request(
     let tenant = registry::schema::structs::Tenant {
         name: request.tenant_name.trim().to_string(),
         created_at: registry::types::datetime::UTCDateTime::now(),
+        logo: request.subscription_id.map(|s| s.trim().to_string()),
         ..Default::default()
     };
 

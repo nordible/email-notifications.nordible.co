@@ -133,12 +133,91 @@ impl Server {
                     self.add_missing_domain(master_user);
                 }
 
-                // Obtain domain
+                // Obtain domain and account_id
                 let auth_as = username.auth_as();
                 let auth_as_address = auth_as.address();
                 let auth_as_local = auth_as.local();
-                let auth_as_domain = auth_as.domain().unwrap();
-                let domain = self.resolve_domain(auth_as_domain).await?;
+
+                // Try to lookup account by full username if it contains '@' (recovery email fallback)
+                let mut found_account_id = None;
+                if auth_as_address.contains('@') {
+                    println!("[STALWART AUTH DEBUG] Looking up recovery email account: {}", auth_as_address);
+                    let mut query = store::registry::RegistryQuery::new(registry::schema::prelude::ObjectType::Account)
+                        .with_limit(1);
+                    query.filters.push(store::registry::RegistryFilter {
+                        property: registry::schema::prelude::Property::Name,
+                        op: store::registry::RegistryFilterOp::Equal,
+                        value: store::registry::RegistryFilterValue::String(auth_as_address.to_string()),
+                        is_pk: false,
+                    });
+                    match self.registry().query::<Vec<types::id::Id>>(query).await {
+                        Ok(ids) => {
+                            println!("[STALWART AUTH DEBUG] Query returned {} IDs", ids.len());
+                            if let Some(id) = ids.first() {
+                                println!("[STALWART AUTH DEBUG] Found account ID: {:?}", id);
+                                found_account_id = Some(*id);
+                            }
+                        }
+                        Err(err) => {
+                            println!("[STALWART AUTH DEBUG] Query failed: {:?}", err);
+                        }
+                    }
+                }
+
+                let (domain, account_id) = if let Some(account_id) = found_account_id {
+                    println!("[STALWART AUTH DEBUG] Using found_account_id: {:?}", account_id);
+                    if let Some(account) = self
+                        .registry()
+                        .object::<structs::Account>(account_id)
+                        .await?
+                    {
+                        println!("[STALWART AUTH DEBUG] Loaded account object");
+                        let domain_id = match &account {
+                            structs::Account::User(u) => {
+                                println!("[STALWART AUTH DEBUG] Account is User. Domain ID: {:?}", u.domain_id);
+                                u.domain_id
+                            }
+                            _ => {
+                                println!("[STALWART AUTH DEBUG] Account is NOT a UserAccount!");
+                                return Err(trc::AuthEvent::Failed.into_err().reason("Account is not a user account"));
+                            }
+                        };
+                        match self.domain_by_id(domain_id.document_id()).await {
+                            Ok(Some(d)) => {
+                                println!("[STALWART AUTH DEBUG] Resolved domain: {}", d.name());
+                                (d, account_id)
+                            }
+                            Ok(None) => {
+                                println!("[STALWART AUTH DEBUG] Domain not found by ID in registry!");
+                                return Err(trc::AuthEvent::Failed.into_err().reason("Domain not found for account"));
+                            }
+                            Err(err) => {
+                                println!("[STALWART AUTH DEBUG] Domain lookup error: {:?}", err);
+                                return Err(err);
+                            }
+                        }
+                    } else {
+                        println!("[STALWART AUTH DEBUG] Account object not found in registry!");
+                        return Err(trc::AuthEvent::Failed.into_err().reason("Account not found"));
+                    }
+                } else {
+                    let auth_as_domain = auth_as.domain().ok_or_else(|| {
+                        trc::AuthEvent::Failed.into_err().reason("No domain in username")
+                    })?;
+                    let domain = self.resolve_domain(auth_as_domain).await?;
+                    
+                    let account_id = if let Some(account_id) =
+                        self.account_id_from_parts(auth_as_local, domain.id).await?
+                    {
+                        account_id
+                    } else {
+                        return Err(trc::AuthEvent::Failed
+                            .into_err()
+                            .ctx(trc::Key::AccountName, auth_as_address.to_string())
+                            .reason("Account not found"));
+                    };
+                    (domain, types::id::Id::from(account_id))
+                };
 
                 // Authenticate app passwords
                 if let Some(app_pass) = AppPassword::parse(secret) {
@@ -149,23 +228,14 @@ impl Server {
                             .ctx(trc::Key::SpanId, req.session_id)
                             .reason("App passwords cannot be used for impersonation"));
                     }
-                    return if let Some(account_id) =
-                        self.account_id_from_parts(auth_as_local, domain.id).await?
-                    {
-                        self.validate_credential(
-                            account_id,
-                            app_pass.credential_id,
-                            app_pass.secret.as_ref(),
-                            req.remote_ip,
-                            req.session_id,
-                        )
-                        .await
-                    } else {
-                        Err(trc::AuthEvent::Failed
-                            .into_err()
-                            .ctx(trc::Key::AccountName, auth_as_address.to_string())
-                            .reason("App password authentication failed: account not found"))
-                    };
+                    return self.validate_credential(
+                        account_id.document_id(),
+                        app_pass.credential_id,
+                        app_pass.secret.as_ref(),
+                        req.remote_ip,
+                        req.session_id,
+                    )
+                    .await;
                 }
 
                 // Obtain external directory, if any
@@ -186,12 +256,10 @@ impl Server {
                     is_alias_login = directory_account.email != auth_as_address;
                     self.build_directory_token(directory_account, req.remote_ip)
                         .await
-                } else if let Some(account_id) =
-                    self.account_id_from_parts(auth_as_local, domain.id).await?
-                {
+                } else {
                     if let Some(account) = self
                         .registry()
-                        .object::<structs::Account>(account_id.into())
+                        .object::<structs::Account>(account_id)
                         .await?
                         .and_then(|account| account.into_user())
                     {
@@ -199,36 +267,38 @@ impl Server {
                             return Err(trc::AuthEvent::Failed
                                 .into_err()
                                 .ctx(trc::Key::AccountName, auth_as_address.to_string())
-                                .ctx(trc::Key::AccountId, account_id)
+                                .ctx(trc::Key::AccountId, account_id.document_id())
                                 .ctx(trc::Key::SpanId, req.session_id)
                                 .reason("Password credential not found for account"));
                         };
 
-                        match verify_mfa_secret_hash(
+                        let ver_res = verify_mfa_secret_hash(
                             credential.otp_auth.as_deref(),
                             mfa_token.as_deref(),
                             credential.secret.as_str(),
                             secret,
                         )
-                        .await?
+                        .await?;
+                        println!("[STALWART AUTH DEBUG] verify_mfa_secret_hash result: {:?}", ver_res);
+                        match ver_res
                         {
                             SecretVerificationResult::Valid => {
-                                is_alias_login = account.name != auth_as_local;
-                                self.access_token(account_id)
+                                is_alias_login = account.name != auth_as_local && account.name != auth_as_address;
+                                self.access_token(account_id.document_id())
                                     .await
                                     .and_then(|token| AccessToken::new(token, req.remote_ip))
                             }
                             SecretVerificationResult::Invalid => Err(trc::AuthEvent::Failed
                                 .into_err()
                                 .ctx(trc::Key::AccountName, auth_as_address.to_string())
-                                .ctx(trc::Key::AccountId, account_id)
+                                .ctx(trc::Key::AccountId, account_id.document_id())
                                 .ctx(trc::Key::SpanId, req.session_id)
                                 .reason("Authentication failed")),
                             SecretVerificationResult::MissingMfaToken => {
                                 Err(trc::AuthEvent::MfaRequired
                                     .into_err()
                                     .ctx(trc::Key::AccountName, auth_as_address.to_string())
-                                    .ctx(trc::Key::AccountId, account_id)
+                                    .ctx(trc::Key::AccountId, account_id.document_id())
                                     .ctx(trc::Key::SpanId, req.session_id)
                                     .reason("MFA token required"))
                             }
@@ -237,14 +307,9 @@ impl Server {
                         Err(trc::AuthEvent::Error
                             .into_err()
                             .ctx(trc::Key::AccountName, auth_as_address.to_string())
-                            .ctx(trc::Key::AccountId, account_id)
+                            .ctx(trc::Key::AccountId, account_id.document_id())
                             .reason("Account not found in registry"))
                     }
-                } else {
-                    Err(trc::AuthEvent::Failed
-                        .into_err()
-                        .ctx(trc::Key::AccountName, auth_as_address.to_string())
-                        .reason("Account not found"))
                 }?;
 
                 // Enforce alias login restrictions
