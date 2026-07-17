@@ -153,6 +153,12 @@ Deploy the server using `cargo-make`:
    cargo make deploy
    ```
 
+or run the following:
+
+   ```bash
+   .\deploy.ps1
+   ```
+
 ## Support
 
 If you are having problems running NordibleMail, found a bug, or just have a question, please head to the [NordibleMail Support Portal](https://support.nordible.co) at [support.nordible.co](https://support.nordible.co). 

@@ -1,0 +1,37 @@
+# Parameters (adjust as needed for your server)
+$SshUser = "root"
+$SshHost = "150.241.247.99"
+$SshPort = "22"
+$LocalTar = "nordiblemail.tar"
+$RemoteTar = "/tmp/nordiblemail.tar"
+
+Write-Host "⏳ Step 1: Building Docker image locally..." -ForegroundColor Cyan
+docker build -t nordiblemail:latest .
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "❌ Docker build failed."
+    exit $LASTEXITCODE
+}
+
+Write-Host "⏳ Step 2: Saving Docker image to tar archive..." -ForegroundColor Cyan
+if (Test-Path $LocalTar) { Remove-Item $LocalTar }
+docker save -o $LocalTar nordiblemail:latest
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "❌ Docker save failed."
+    exit $LASTEXITCODE
+}
+
+Write-Host "⏳ Step 3: Transferring image to $SshHost via SCP..." -ForegroundColor Cyan
+scp -P $SshPort $LocalTar "${SshUser}@${SshHost}:${RemoteTar}"
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "❌ SCP transfer failed."
+    exit $LASTEXITCODE
+}
+
+Write-Host "⏳ Step 4: Loading image, tagging, and recreating container on $SshHost..." -ForegroundColor Cyan
+ssh -p $SshPort "${SshUser}@${SshHost}" "docker load -i $RemoteTar && rm -f $RemoteTar && docker tag nordiblemail:latest stalwart-custom:latest && cd /root/nordible-mail && docker compose up -d --force-recreate"
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "❌ Remote SSH deployment failed."
+    exit $LASTEXITCODE
+}
+
+Write-Host "✅ Deployment completed successfully!" -ForegroundColor Green
