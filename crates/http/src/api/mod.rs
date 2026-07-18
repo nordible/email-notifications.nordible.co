@@ -394,17 +394,21 @@ pub async fn handle_signup_request(
         return Err(trc::ResourceEvent::BadParameters.into_err().details("Domain is already registered."));
     }
 
-    // Generate IDs
-    let tenant_id = types::id::Id::new(server.registry().assign_id());
-    let domain_id = types::id::Id::new(server.registry().assign_id());
-    let account_id = types::id::Id::new(server.registry().assign_id());
-
     // Construct Tenant
     let tenant = registry::schema::structs::Tenant {
         name: request.tenant_name.trim().to_string(),
         created_at: registry::types::datetime::UTCDateTime::now(),
         logo: request.subscription_id.map(|s| s.trim().to_string()),
         ..Default::default()
+    };
+
+    let tenant_obj = tenant.into();
+    let tenant_write_result = server.registry()
+        .write(store::registry::write::RegistryWrite::insert(&tenant_obj))
+        .await?;
+    let tenant_id = match tenant_write_result {
+        store::registry::write::RegistryWriteResult::Success(id) => id,
+        err => return Err(trc::ResourceEvent::BadParameters.into_err().details(format!("Failed to create tenant: {err:?}"))),
     };
 
     // Construct Domain
@@ -414,6 +418,15 @@ pub async fn handle_signup_request(
         created_at: registry::types::datetime::UTCDateTime::now(),
         member_tenant_id: Some(tenant_id),
         ..Default::default()
+    };
+
+    let domain_obj = domain.into();
+    let domain_write_result = server.registry()
+        .write(store::registry::write::RegistryWrite::insert(&domain_obj))
+        .await?;
+    let domain_id = match domain_write_result {
+        store::registry::write::RegistryWriteResult::Success(id) => id,
+        err => return Err(trc::ResourceEvent::BadParameters.into_err().details(format!("Failed to create domain: {err:?}"))),
     };
 
     // Construct Account
@@ -440,30 +453,16 @@ pub async fn handle_signup_request(
         ..Default::default()
     });
 
-    // Write to database
-    server.registry()
-        .write(store::registry::write::RegistryWrite::Insert {
-            object: &tenant.into(),
-            id: Some(tenant_id),
-        })
+    let account_obj = account.into();
+    let account_write_result = server.registry()
+        .write(store::registry::write::RegistryWrite::insert(&account_obj))
         .await?;
-
-    server.registry()
-        .write(store::registry::write::RegistryWrite::Insert {
-            object: &domain.into(),
-            id: Some(domain_id),
-        })
-        .await?;
-
-    server.registry()
-        .write(store::registry::write::RegistryWrite::Insert {
-            object: &account.into(),
-            id: Some(account_id),
-        })
-        .await?;
+    let _account_id = match account_write_result {
+        store::registry::write::RegistryWriteResult::Success(id) => id,
+        err => return Err(trc::ResourceEvent::BadParameters.into_err().details(format!("Failed to create account: {err:?}"))),
+    };
 
     if let (Some(selector), Some(private_key)) = (request.dkim_selector, request.dkim_private_key) {
-        let dkim_id = types::id::Id::new(server.registry().assign_id());
         let dkim_sig = registry::schema::structs::DkimSignature::Dkim1RsaSha256(
             registry::schema::structs::Dkim1Signature {
                 domain_id,
@@ -481,11 +480,9 @@ pub async fn handle_signup_request(
             }
         );
 
+        let dkim_sig_obj = dkim_sig.into();
         server.registry()
-            .write(store::registry::write::RegistryWrite::Insert {
-                object: &dkim_sig.into(),
-                id: Some(dkim_id),
-            })
+            .write(store::registry::write::RegistryWrite::insert(&dkim_sig_obj))
             .await?;
     }
 
