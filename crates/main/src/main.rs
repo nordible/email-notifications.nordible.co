@@ -32,6 +32,21 @@ static GLOBAL: Jemalloc = Jemalloc;
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
+    // Load .env file if it exists
+    if let Ok(content) = std::fs::read_to_string(".env") {
+        for line in content.lines() {
+            let line = line.trim();
+            if line.is_empty() || line.starts_with('#') {
+                continue;
+            }
+            if let Some((key, val)) = line.split_once('=') {
+                let key = key.trim();
+                let val = val.trim().trim_matches('"').trim_matches('\'');
+                unsafe { std::env::set_var(key, val); }
+            }
+        }
+    }
+
     // Install AWS-LC-RS as the default Rustls crypto provider
     rustls::crypto::aws_lc_rs::default_provider()
         .install_default()

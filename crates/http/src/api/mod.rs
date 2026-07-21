@@ -69,11 +69,14 @@ impl ManagementApi for Server {
 
         match path.first().copied().unwrap_or_default() {
             "signup" if is_post => {
-                let expected_key = std::env::var("STALWART_API_KEY").unwrap_or_else(|_| "secret-fallback-key-123".to_string());
-                if req.headers().get("X-API-Key").and_then(|v| v.to_str().ok()) != Some(&expected_key) {
-                    return Ok(HttpResponse::new(StatusCode::UNAUTHORIZED)
-                        .with_content_type("application/problem+json")
-                        .with_text_body(serde_json::to_string(&RequestError::unauthorized()).unwrap_or_default()));
+                let is_public = std::env::var("STALWART_PUBLIC_SIGNUP").map(|v| v == "true").unwrap_or(false);
+                if !is_public {
+                    let expected_key = std::env::var("STALWART_API_KEY").unwrap_or_else(|_| "secret-fallback-key-123".to_string());
+                    if req.headers().get("X-API-Key").and_then(|v| v.to_str().ok()) != Some(&expected_key) {
+                        return Ok(HttpResponse::new(StatusCode::UNAUTHORIZED)
+                            .with_content_type("application/problem+json")
+                            .with_text_body(serde_json::to_string(&RequestError::unauthorized()).unwrap_or_default()));
+                    }
                 }
 
                 self.is_http_anonymous_request_allowed(session.remote_ip)
@@ -88,11 +91,29 @@ impl ManagementApi for Server {
             "auth" if is_post => {
                 self.is_http_anonymous_request_allowed(session.remote_ip)
                     .await?;
-                Box::pin(self.handle_login_request(
-                    session,
-                    body.ok_or_else(|| trc::LimitEvent::SizeRequest.into_err())?,
-                ))
-                .await
+                match path.get(1).copied() {
+                    Some("reset-request") => {
+                        Box::pin(handle_reset_request(
+                            self,
+                            body.ok_or_else(|| trc::LimitEvent::SizeRequest.into_err())?,
+                        ))
+                        .await
+                    }
+                    Some("reset") => {
+                        Box::pin(handle_reset_confirm(
+                            self,
+                            body.ok_or_else(|| trc::LimitEvent::SizeRequest.into_err())?,
+                        ))
+                        .await
+                    }
+                    _ => {
+                        Box::pin(self.handle_login_request(
+                            session,
+                            body.ok_or_else(|| trc::LimitEvent::SizeRequest.into_err())?,
+                        ))
+                        .await
+                    }
+                }
             }
             "discover" => {
                 if let Some(email) = path.get(1).copied() {
@@ -486,6 +507,10 @@ pub async fn handle_signup_request(
             .await?;
     }
 
+    // Clear negative caches so the newly created domain and account are queryable immediately
+    server.inner.cache.domain_names_negative.clear();
+    server.inner.cache.emails_negative.clear();
+
     let resp = serde_json::json!({
         "success": true,
         "username": format!("{}@{}", request.admin_username.trim(), domain_name),
@@ -496,3 +521,175 @@ pub async fn handle_signup_request(
         .with_content_type("application/json")
         .with_text_body(resp.to_string()))
 }
+
+use std::sync::{LazyLock, Mutex};
+use std::collections::HashMap;
+use std::time::Instant;
+
+struct ResetToken {
+    code: String,
+    expires_at: Instant,
+}
+
+static RESET_TOKENS: LazyLock<Mutex<HashMap<String, ResetToken>>> = LazyLock::new(|| {
+    Mutex::new(HashMap::new())
+});
+
+fn generate_code() -> String {
+    use std::time::SystemTime;
+    let nanos = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_nanos();
+    let val = (nanos % 900_000) + 100_000;
+    format!("{}", val)
+}
+
+#[derive(serde::Deserialize)]
+struct ResetRequest {
+    email: String,
+}
+
+pub async fn handle_reset_request(
+    server: &Server,
+    body: Vec<u8>,
+) -> trc::Result<HttpResponse> {
+    let request: ResetRequest = serde_json::from_slice(&body).map_err(|err| {
+        trc::EventType::Resource(trc::ResourceEvent::BadParameters).from_json_error(err)
+    })?;
+
+    let email = request.email.trim().to_ascii_lowercase();
+    if email.is_empty() || !email.contains('@') {
+        return Err(trc::ResourceEvent::BadParameters.into_err().details("Invalid email address."));
+    }
+
+    let _account_id = match server.account_id_from_email(&email, false).await? {
+        Some(id) => types::id::Id::new(id.into()),
+        None => {
+            return Err(trc::ResourceEvent::BadParameters.into_err().details("Account not found."));
+        }
+    };
+
+    let code = generate_code();
+    {
+        let mut tokens = RESET_TOKENS.lock().unwrap();
+        tokens.insert(
+            email.clone(),
+            ResetToken {
+                code: code.clone(),
+                expires_at: Instant::now() + Duration::from_secs(600),
+            },
+        );
+    }
+
+    println!("[PASSWORD RESET] Verification code for {}: {}", email, code);
+
+    let resp = serde_json::json!({
+        "success": true,
+        "message": "Verification code generated successfully.",
+        "dev_token": code,
+    });
+
+    Ok(HttpResponse::new(StatusCode::OK)
+        .with_no_cache()
+        .with_content_type("application/json")
+        .with_text_body(resp.to_string()))
+}
+
+#[derive(serde::Deserialize)]
+struct ResetConfirmRequest {
+    email: String,
+    token: String,
+    password: String,
+}
+
+pub async fn handle_reset_confirm(
+    server: &Server,
+    body: Vec<u8>,
+) -> trc::Result<HttpResponse> {
+    let request: ResetConfirmRequest = serde_json::from_slice(&body).map_err(|err| {
+        trc::EventType::Resource(trc::ResourceEvent::BadParameters).from_json_error(err)
+    })?;
+
+    let email = request.email.trim().to_ascii_lowercase();
+    let token = request.token.trim();
+    let password = request.password.trim();
+
+    if email.is_empty() || token.is_empty() || password.is_empty() {
+        return Err(trc::ResourceEvent::BadParameters.into_err().details("All fields are required."));
+    }
+
+    {
+        let mut tokens = RESET_TOKENS.lock().unwrap();
+        if let Some(entry) = tokens.get(&email) {
+            if entry.expires_at < Instant::now() {
+                tokens.remove(&email);
+                return Err(trc::ResourceEvent::BadParameters.into_err().details("Reset token has expired."));
+            }
+            if entry.code != token {
+                return Err(trc::ResourceEvent::BadParameters.into_err().details("Invalid reset token."));
+            }
+        } else {
+            return Err(trc::ResourceEvent::BadParameters.into_err().details("No password reset requested for this email."));
+        }
+        tokens.remove(&email);
+    }
+
+    let account_id = match server.account_id_from_email(&email, false).await? {
+        Some(id) => types::id::Id::new(id.into()),
+        None => {
+            return Err(trc::ResourceEvent::BadParameters.into_err().details("Account not found."));
+        }
+    };
+
+    let current_account = match server.registry().object::<registry::schema::prelude::Account>(account_id).await? {
+        Some(acc) => acc,
+        None => {
+            return Err(trc::ResourceEvent::BadParameters.into_err().details("Failed to load account details."));
+        }
+    };
+
+    let mut updated_account = current_account.clone().into_user().ok_or_else(|| {
+        trc::ResourceEvent::BadParameters.into_err().details("Only user accounts can reset passwords.")
+    })?;
+
+    let password_hash = directory::core::secret::hash_secret(
+        server.core.network.security.password_hash_algorithm,
+        password.to_string().into_bytes(),
+    )
+    .await
+    .unwrap_or_default();
+
+    updated_account.set_password(password_hash);
+
+    let old_account_obj = registry::schema::prelude::Object::from(current_account);
+    let updated_account_obj = registry::schema::prelude::Object::from(registry::schema::structs::Account::User(updated_account));
+
+    let write_result = server.registry()
+        .write(store::registry::write::RegistryWrite::update(
+            account_id,
+            &updated_account_obj,
+            &old_account_obj,
+        ))
+        .await?;
+
+    match write_result {
+        store::registry::write::RegistryWriteResult::Success(id) => {
+            let mut invalidator = common::cache::invalidate::CacheInvalidationBuilder::default();
+            invalidator.process_update(id, &old_account_obj, &updated_account_obj);
+            server.invalidate_caches(invalidator).await?;
+        }
+        err => return Err(trc::ResourceEvent::BadParameters.into_err().details(format!("Failed to update account: {err:?}"))),
+    };
+
+    let resp = serde_json::json!({
+        "success": true,
+        "message": "Password updated successfully.",
+    });
+
+    Ok(HttpResponse::new(StatusCode::OK)
+        .with_no_cache()
+        .with_content_type("application/json")
+        .with_text_body(resp.to_string()))
+}
+

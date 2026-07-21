@@ -640,6 +640,12 @@ impl ParseHttp for Server {
 
                 return Ok(HtmlResponse::new(page.to_string()).into_http_response());
             }
+            "signup" => {
+                return Ok(HttpResponse::redirect("/admin/signup".to_string()).into());
+            }
+            "reset-password" => {
+                return Ok(HttpResponse::redirect("/admin/reset".to_string()).into());
+            }
             external => {
                 if path.next().is_none() {
                     if !external.is_empty() {
