@@ -187,7 +187,17 @@ impl WebApplicationManager {
         self.bundle_path.clean().await.map_err(unpack_error)?;
 
         // Obtain application bundle
-        let bundle = if let Some(bundle) = server
+        let bundle = if self.url == "embedded://webui.zip" {
+            fetch_resource(&self.url, None, Duration::from_secs(60), MAX_APP_SIZE)
+                .await
+                .map_err(|err| {
+                    trc::ResourceEvent::Error
+                        .caused_by(trc::location!())
+                        .ctx(Key::Url, self.url.clone())
+                        .reason(err)
+                        .details("Failed to fetch embedded application bundle")
+                })?
+        } else if let Some(bundle) = server
             .blob_store()
             .get_blob(self.blob_key.as_slice(), 0..usize::MAX)
             .await?

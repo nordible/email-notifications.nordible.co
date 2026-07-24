@@ -11,6 +11,7 @@
 pub mod telemetry;
 // SPDX-SnippetEnd
 pub mod diagnose;
+pub mod plans;
 
 use crate::{
     api::diagnose::{DeliveryStage, spawn_delivery_diagnose},
@@ -379,13 +380,15 @@ impl UnauthorizedResponse for HttpResponse {
     }
 }
 
-#[derive(serde::Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Default, serde::Deserialize)]
+#[serde(default, rename_all = "camelCase")]
 struct SignupRequest {
     tenant_name: String,
     domain_name: String,
     admin_username: String,
     admin_password: String,
+    recovery_email: Option<String>,
+    plan: Option<String>,
     dkim_selector: Option<String>,
     dkim_private_key: Option<String>,
     subscription_id: Option<String>,
@@ -405,6 +408,11 @@ pub async fn handle_signup_request(
         return Err(trc::ResourceEvent::BadParameters.into_err().details("All fields are required."));
     }
 
+    // Determine plan tier and storage quotas matching marketing site offerings
+    let plan_tier = plans::PlanTier::from_str(request.plan.as_deref().unwrap_or("trial"));
+    let mailbox_quota = plan_tier.mailbox_quota_bytes();
+    let max_accounts = plan_tier.default_max_accounts();
+
     // Validate domain format simply (must contain at least one dot)
     if !domain_name.contains('.') || domain_name.len() < 4 {
         return Err(trc::ResourceEvent::BadParameters.into_err().details("Invalid domain name."));
@@ -415,11 +423,15 @@ pub async fn handle_signup_request(
         return Err(trc::ResourceEvent::BadParameters.into_err().details("Domain is already registered."));
     }
 
-    // Construct Tenant
+    // Construct Tenant with plan quotas
     let tenant = registry::schema::structs::Tenant {
         name: request.tenant_name.trim().to_string(),
         created_at: registry::types::datetime::UTCDateTime::now(),
         logo: request.subscription_id.map(|s| s.trim().to_string()),
+        quotas: utils::map::vec_map::VecMap::from_iter([
+            (registry::schema::enums::TenantStorageQuota::MaxAccounts, max_accounts),
+            (registry::schema::enums::TenantStorageQuota::MaxDiskQuota, mailbox_quota),
+        ]),
         ..Default::default()
     };
 
@@ -441,7 +453,7 @@ pub async fn handle_signup_request(
         ..Default::default()
     };
 
-    let domain_obj = domain.into();
+    let domain_obj = domain.clone().into();
     let domain_write_result = server.registry()
         .write(store::registry::write::RegistryWrite::insert(&domain_obj))
         .await?;
@@ -450,7 +462,7 @@ pub async fn handle_signup_request(
         err => return Err(trc::ResourceEvent::BadParameters.into_err().details(format!("Failed to create domain: {err:?}"))),
     };
 
-    // Construct Account
+    // Construct Account with plan storage quota
     let password_hash = directory::core::secret::hash_secret(
         server.core.network.security.password_hash_algorithm,
         request.admin_password.into_bytes(),
@@ -471,6 +483,10 @@ pub async fn handle_signup_request(
         created_at: registry::types::datetime::UTCDateTime::now(),
         member_tenant_id: Some(tenant_id),
         roles: registry::schema::structs::UserRoles::Admin,
+        quotas: utils::map::vec_map::VecMap::from_iter([
+            (registry::schema::enums::StorageQuota::MaxDiskQuota, mailbox_quota),
+        ]),
+        description: request.recovery_email.clone(),
         ..Default::default()
     });
 
@@ -483,15 +499,26 @@ pub async fn handle_signup_request(
         err => return Err(trc::ResourceEvent::BadParameters.into_err().details(format!("Failed to create account: {err:?}"))),
     };
 
-    if let (Some(selector), Some(private_key)) = (request.dkim_selector, request.dkim_private_key) {
+    let selector_str = request.dkim_selector.as_deref().unwrap_or("dkim").to_string();
+    let private_key_pem = if let Some(pk) = request.dkim_private_key {
+        pk.trim().to_string()
+    } else {
+        match common::network::dkim::generate_dkim_private_key(registry::schema::enums::DkimSignatureType::Dkim1RsaSha256).await {
+            Ok(Ok(pem)) => pem,
+            _ => String::new(),
+        }
+    };
+
+    let mut dkim_full_value = String::new();
+    if !private_key_pem.is_empty() {
         let dkim_sig = registry::schema::structs::DkimSignature::Dkim1RsaSha256(
             registry::schema::structs::Dkim1Signature {
                 domain_id,
                 member_tenant_id: Some(tenant_id),
-                selector: selector.trim().to_string(),
+                selector: selector_str.clone(),
                 private_key: registry::schema::structs::SecretText::Text(
                     registry::schema::structs::SecretTextValue {
-                        secret: private_key.trim().to_string(),
+                        secret: private_key_pem,
                     }
                 ),
                 created_at: registry::types::datetime::UTCDateTime::now(),
@@ -500,6 +527,10 @@ pub async fn handle_signup_request(
                 ..Default::default()
             }
         );
+
+        if let Ok(pub_key) = common::network::dkim::generate_dkim_public_key(&dkim_sig).await {
+            dkim_full_value = format!("v=DKIM1; k=rsa; p={pub_key}");
+        }
 
         let dkim_sig_obj = dkim_sig.into();
         server.registry()
@@ -511,9 +542,44 @@ pub async fn handle_signup_request(
     server.inner.cache.domain_names_negative.clear();
     server.inner.cache.emails_negative.clear();
 
+    let full_username = format!("{}@{}", request.admin_username.trim(), domain_name);
+
+    let admin_host = server.core.network.server_name.as_str();
+    let bind_zone = server.build_bind_dns_records(domain_id, &domain).await.unwrap_or_default();
+
+    let dns_records = serde_json::json!({
+        "mx": format!("{} (Priority 10)", admin_host),
+        "mxHost": domain_name.clone(),
+        "mxValue": admin_host,
+        "spfHost": domain_name.clone(),
+        "spfValue": format!("v=spf1 include:{} ~all", admin_host),
+        "dkimSelector": selector_str,
+        "dkimHost": format!("{}._domainkey.{}", selector_str, domain_name),
+        "dkimValue": if dkim_full_value.is_empty() { "v=DKIM1; k=rsa; p=MIIBIj...".to_string() } else { dkim_full_value },
+        "dmarcHost": format!("_dmarc.{}", domain_name),
+        "dmarcValue": "v=DMARC1; p=none;",
+        "autodiscoverHost": format!("autodiscover.{}", domain_name),
+        "autodiscoverValue": admin_host,
+        "autoconfigHost": format!("autoconfig.{}", domain_name),
+        "autoconfigValue": admin_host,
+        "srvImapHost": format!("_imaps._tcp.{}", domain_name),
+        "srvImapValue": format!("0 1 993 {}.", admin_host),
+        "srvSubmissionHost": format!("_submission._tcp.{}", domain_name),
+        "srvSubmissionValue": format!("0 1 587 {}.", admin_host),
+        "mtaStsHost": format!("mta-sts.{}", domain_name),
+        "mtaStsValue": admin_host,
+        "mtaStsTxtHost": format!("_mta-sts.{}", domain_name),
+        "mtaStsTxtValue": "v=STSv1; id=20260724",
+        "tlsRptHost": format!("_smtp._tls.{}", domain_name),
+        "tlsRptValue": format!("v=TLSRPTv1; rua=mailto:tls-reports@{}", domain_name),
+        "bindZone": bind_zone,
+    });
+
     let resp = serde_json::json!({
         "success": true,
-        "username": format!("{}@{}", request.admin_username.trim(), domain_name),
+        "username": full_username,
+        "recoveryEmail": request.recovery_email,
+        "dnsRecords": dns_records,
     });
 
     Ok(HttpResponse::new(StatusCode::OK)
