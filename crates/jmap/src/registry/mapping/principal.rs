@@ -14,7 +14,7 @@ use jmap_proto::error::set::SetError;
 use registry::{schema::structs::TaskStatus, types::datetime::UTCDateTime};
 use registry::{
     schema::{
-        enums::{AccountType, Permission, TenantStorageQuota},
+        enums::{AccountType, Permission, StorageQuota, TenantStorageQuota},
         prelude::{MASKED_PASSWORD, ObjectType, Property},
         structs::{Account, Credential, Role, Task, TaskDestroyAccount},
     },
@@ -209,6 +209,12 @@ pub(crate) async fn validate_account(
                 }
             }
 
+            // Validate tenant total disk quota limit
+            let requested_disk_quota = account.quotas.get(&StorageQuota::MaxDiskQuota).copied().unwrap_or(0);
+            if let Err(err) = validate_tenant_disk_quota(set, Some((account.name.as_str(), account.domain_id)), account.member_tenant_id, requested_disk_quota).await? {
+                return Ok(Err(err));
+            }
+
             account.permissions != old_account.permissions || account.roles != old_account.roles
         }
         (Account::Group(account), AccountUpdate::Update(Account::Group(old_account))) => {
@@ -217,6 +223,12 @@ pub(crate) async fn validate_account(
         (Account::User(account), AccountUpdate::Create(_)) => {
             // Validate tenant quotas
             if let Err(err) = validate_tenant_quota(set, TenantStorageQuota::MaxAccounts).await? {
+                return Ok(Err(err));
+            }
+
+            // Validate tenant total disk quota limit
+            let requested_disk_quota = account.quotas.get(&StorageQuota::MaxDiskQuota).copied().unwrap_or(0);
+            if let Err(err) = validate_tenant_disk_quota(set, None, account.member_tenant_id, requested_disk_quota).await? {
                 return Ok(Err(err));
             }
 
@@ -427,6 +439,61 @@ pub(crate) async fn validate_tenant_quota(
     }
 
     Ok(Ok(ObjectResponse::default()))
+}
+
+#[cfg(feature = "enterprise")]
+pub(crate) async fn validate_tenant_disk_quota(
+    set: &RegistrySetResponse<'_>,
+    target_account: Option<(&str, Id)>,
+    member_tenant_id: Option<Id>,
+    requested_disk_quota: u64,
+) -> ValidationResult {
+    if let Some(tenant_id) = member_tenant_id.map(|id| id.id() as u32).or_else(|| set.access_token.tenant_id()) {
+        let tenant = set.server.tenant(tenant_id).await?;
+        let tenant_limit = tenant.quota_disk;
+
+        if tenant_limit != u64::MAX && tenant_limit > 0 {
+            let query = RegistryQuery::new(ObjectType::Account)
+                .with_tenant(Some(tenant_id))
+                .equal(Property::Type, AccountType::User.to_id());
+
+            let account_ids = set.server.registry().query::<Vec<Id>>(query).await?;
+            let mut total_allocated: u64 = 0;
+
+            for id in account_ids {
+                if let Some(obj) = set.server.registry().object::<Account>(id).await? {
+                    if let Account::User(user_acc) = obj {
+                        if let Some((target_name, target_domain_id)) = target_account {
+                            if user_acc.name == target_name && user_acc.domain_id == target_domain_id {
+                                continue;
+                            }
+                        }
+                        if let Some(q) = user_acc.quotas.get(&StorageQuota::MaxDiskQuota) {
+                            total_allocated = total_allocated.saturating_add(*q);
+                        }
+                    }
+                }
+            }
+
+            total_allocated = total_allocated.saturating_add(requested_disk_quota);
+
+            if total_allocated > tenant_limit {
+                return Ok(Err(SetError::over_quota()));
+            }
+        }
+    }
+
+    Ok(Ok(ObjectResponse::default()))
+}
+
+#[cfg(not(feature = "enterprise"))]
+pub(crate) async fn validate_tenant_disk_quota(
+    _set: &RegistrySetResponse<'_>,
+    _target_account: Option<(&str, Id)>,
+    _member_tenant_id: Option<Id>,
+    _requested_disk_quota: u64,
+) -> ValidationResult {
+    ValidationResult::Ok(Ok(ObjectResponse::default()))
 }
 // SPDX-SnippetEnd
 
