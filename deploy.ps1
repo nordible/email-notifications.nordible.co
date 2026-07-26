@@ -1,7 +1,20 @@
-# Parameters (adjust as needed for your server)
-$SshUser = "root"
-$SshHost = "150.241.247.99"
-$SshPort = "22"
+# Load environment variables from .env if present
+if (Test-Path ".env") {
+    Get-Content ".env" | Where-Object { $_ -match '=' -and -not $_.StartsWith('#') } | ForEach-Object {
+        $parts = $_.Split('=', 2)
+        $key = $parts[0].Trim()
+        $val = $parts[1].Trim()
+        Set-Variable -Name $key -Value $val -Scope Script -ErrorAction SilentlyContinue
+    }
+}
+
+# Parameters (fallback to defaults if not defined in .env)
+$SshUser = if ($SSH_USER) { $SSH_USER } else { "root" }
+$SshHost = if ($SSH_HOST) { $SSH_HOST } else { "95.217.5.54" }
+$SshPort = if ($SSH_PORT) { $SSH_PORT } else { "22" }
+$ContainerName = if ($CONTAINER_NAME) { $CONTAINER_NAME } else { "nordible-mail-server" }
+$NetworkName = if ($CADDY_NETWORK) { $CADDY_NETWORK } else { "nordible-net" }
+
 $LocalTar = "nordiblemail.tar"
 $RemoteTar = "/tmp/nordiblemail.tar"
 
@@ -27,11 +40,13 @@ if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
-Write-Host "⏳ Step 4: Loading image, tagging, and recreating container on $SshHost..." -ForegroundColor Cyan
-ssh -p $SshPort "${SshUser}@${SshHost}" "docker load -i $RemoteTar && rm -f $RemoteTar && docker tag nordiblemail:latest stalwart-custom:latest && cd /root/nordible-mail && docker compose up -d --force-recreate"
+Write-Host "⏳ Step 4: Loading image and running $ContainerName on $SshHost..." -ForegroundColor Cyan
+$remoteScript = "docker load -i $RemoteTar && rm -f $RemoteTar && docker tag nordiblemail:latest ${ContainerName}:latest && docker network create ${NetworkName} || true && docker rm -f ${ContainerName} || true && docker run -d --name ${ContainerName} --restart unless-stopped --network ${NetworkName} -p 25:25 -p 465:465 -p 587:587 -p 993:993 -p 8080:8080 -v /opt/${ContainerName}/data:/var/lib/stalwart -v /opt/${ContainerName}/etc:/etc/stalwart ${ContainerName}:latest"
+
+ssh -p $SshPort "${SshUser}@${SshHost}" $remoteScript
 if ($LASTEXITCODE -ne 0) {
     Write-Error "❌ Remote SSH deployment failed."
     exit $LASTEXITCODE
 }
 
-Write-Host "✅ Deployment completed successfully!" -ForegroundColor Green
+Write-Host "✅ Deployment of $ContainerName to $SshHost completed successfully!" -ForegroundColor Green
