@@ -39,9 +39,9 @@ impl PlanTier {
     pub fn default_max_accounts(&self) -> u64 {
         match self {
             PlanTier::Trial => 1,
-            PlanTier::Basic => 1,
-            PlanTier::Starter => 5,
-            PlanTier::Professional => 20,
+            PlanTier::Basic => u64::MAX,
+            PlanTier::Starter => u64::MAX,
+            PlanTier::Professional => u64::MAX,
         }
     }
 }
