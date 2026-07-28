@@ -9,26 +9,31 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum PlanTier {
-    Trial,
     Basic,
     Starter,
     Professional,
 }
 
 impl PlanTier {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            PlanTier::Basic => "basic",
+            PlanTier::Starter => "starter",
+            PlanTier::Professional => "professional",
+        }
+    }
+
     pub fn from_str(s: &str) -> Self {
         match s.to_lowercase().as_str() {
-            "basic" => PlanTier::Basic,
             "starter" => PlanTier::Starter,
             "professional" | "pro" => PlanTier::Professional,
-            _ => PlanTier::Trial,
+            _ => PlanTier::Basic,
         }
     }
 
     /// Storage quota per mailbox in bytes matching marketing site offerings
     pub fn mailbox_quota_bytes(&self) -> u64 {
         match self {
-            PlanTier::Trial => 10 * 1024 * 1024,                  // 10 MB
             PlanTier::Basic => 5 * 1024 * 1024 * 1024,             // 5 GB
             PlanTier::Starter => 10 * 1024 * 1024 * 1024,          // 10 GB
             PlanTier::Professional => 30 * 1024 * 1024 * 1024,     // 30 GB
@@ -38,7 +43,6 @@ impl PlanTier {
     /// Default max account limit for the tenant
     pub fn default_max_accounts(&self) -> u64 {
         match self {
-            PlanTier::Trial => 1,
             PlanTier::Basic => u64::MAX,
             PlanTier::Starter => u64::MAX,
             PlanTier::Professional => u64::MAX,
@@ -52,13 +56,7 @@ mod tests {
 
     #[test]
     fn test_plan_tier_parsing_and_quotas() {
-        // Trial default fallback
-        let trial = PlanTier::from_str("unknown");
-        assert_eq!(trial, PlanTier::Trial);
-        assert_eq!(trial.mailbox_quota_bytes(), 10 * 1024 * 1024); // 10 MB
-        assert_eq!(trial.default_max_accounts(), 1);
-
-        // Basic Plan (5 GB)
+        // Basic Plan default fallback
         let basic = PlanTier::from_str("basic");
         assert_eq!(basic, PlanTier::Basic);
         assert_eq!(basic.mailbox_quota_bytes(), 5 * 1024 * 1024 * 1024); // 5 GB

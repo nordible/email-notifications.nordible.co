@@ -33,15 +33,19 @@ if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
-Write-Host "⏳ Step 3: Transferring image to $SshHost via SCP..." -ForegroundColor Cyan
+Write-Host "⏳ Step 3: Transferring image and .env to $SshHost via SCP..." -ForegroundColor Cyan
 scp -P $SshPort $LocalTar "${SshUser}@${SshHost}:${RemoteTar}"
+if (Test-Path ".env") {
+    ssh -p $SshPort "${SshUser}@${SshHost}" "mkdir -p /opt/${ContainerName}"
+    scp -P $SshPort ".env" "${SshUser}@${SshHost}:/opt/${ContainerName}/.env"
+}
 if ($LASTEXITCODE -ne 0) {
     Write-Error "❌ SCP transfer failed."
     exit $LASTEXITCODE
 }
 
 Write-Host "⏳ Step 4: Loading image and running $ContainerName on $SshHost..." -ForegroundColor Cyan
-$remoteScript = "docker load -i $RemoteTar && rm -f $RemoteTar && docker tag nordiblemail:latest ${ContainerName}:latest && docker network create ${NetworkName} || true && docker rm -f ${ContainerName} || true && docker run -d --name ${ContainerName} --restart unless-stopped --network ${NetworkName} -p 25:25 -p 465:465 -p 587:587 -p 993:993 -p 8080:8080 -v /opt/${ContainerName}/data:/var/lib/stalwart -v /opt/${ContainerName}/etc:/etc/stalwart ${ContainerName}:latest"
+$remoteScript = "docker load -i $RemoteTar && rm -f $RemoteTar && docker tag nordiblemail:latest ${ContainerName}:latest && docker network create ${NetworkName} || true && docker rm -f ${ContainerName} || true && docker run -d --name ${ContainerName} --restart unless-stopped --network ${NetworkName} --env-file /opt/${ContainerName}/.env -p 25:25 -p 465:465 -p 587:587 -p 993:993 -p 8080:8080 -v /opt/${ContainerName}/data:/var/lib/stalwart -v /opt/${ContainerName}/etc:/etc/stalwart ${ContainerName}:latest"
 
 ssh -p $SshPort "${SshUser}@${SshHost}" $remoteScript
 if ($LASTEXITCODE -ne 0) {

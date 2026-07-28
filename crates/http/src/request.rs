@@ -646,6 +646,9 @@ impl ParseHttp for Server {
             "reset-password" => {
                 return Ok(HttpResponse::redirect("/admin/reset".to_string()).into());
             }
+            // "account" | "accounts" => {
+            //     return Ok(HttpResponse::redirect("/admin/accounts".to_string()).into());
+            // }
             external => {
                 if path.next().is_none() {
                     if !external.is_empty() {
@@ -785,6 +788,7 @@ async fn handle_session<T: SessionStream>(inner: Arc<Inner>, session: SessionDat
                     }
 
                     // Parse HTTP request
+                    let req_path = req.uri().path().to_string();
                     let response = match Box::pin(server.parse_http_request(
                         req,
                         HttpSessionData {
@@ -801,6 +805,7 @@ async fn handle_session<T: SessionStream>(inner: Arc<Inner>, session: SessionDat
                     {
                         Ok(response) => response,
                         Err(err) => {
+                            println!("\n[SERVER ERROR 500] Path: {req_path} | Details: {err:?}\n");
                             let response = err.into_http_response();
                             trc::error!(err.span_id(session.session_id));
                             response

@@ -70,16 +70,6 @@ impl ManagementApi for Server {
 
         match path.first().copied().unwrap_or_default() {
             "signup" if is_post => {
-                let is_public = std::env::var("STALWART_PUBLIC_SIGNUP").map(|v| v == "true").unwrap_or(false);
-                if !is_public {
-                    let expected_key = std::env::var("STALWART_API_KEY").unwrap_or_else(|_| "secret-fallback-key-123".to_string());
-                    if req.headers().get("X-API-Key").and_then(|v| v.to_str().ok()) != Some(&expected_key) {
-                        return Ok(HttpResponse::new(StatusCode::UNAUTHORIZED)
-                            .with_content_type("application/problem+json")
-                            .with_text_body(serde_json::to_string(&RequestError::unauthorized()).unwrap_or_default()));
-                    }
-                }
-
                 self.is_http_anonymous_request_allowed(session.remote_ip)
                     .await?;
                 Box::pin(handle_signup_request(
@@ -139,13 +129,14 @@ impl ManagementApi for Server {
                 const SCHEMA_HASH: &str =
                     include_str!("../../../../resources/schema/schema.json.sha256");
 
-                if path.get(1).is_some_and(|hash| hash == &SCHEMA_HASH) {
+                let schema_hash = SCHEMA_HASH.trim();
+                if path.get(1).is_some_and(|hash| hash == &schema_hash) {
                     Ok(Resource::new("application/json", SCHEMA_JSON.to_vec())
                         .into_http_response()
                         .with_immutable_cache()
                         .with_header(CONTENT_ENCODING, "gzip"))
                 } else {
-                    Ok(HttpResponse::redirect(format!("/api/schema/{SCHEMA_HASH}")))
+                    Ok(HttpResponse::redirect(format!("/api/schema/{schema_hash}")))
                 }
             }
             "token" => {
@@ -354,6 +345,9 @@ impl ToManageHttpResponse for &trc::Error {
             trc::EventType::Auth(
                 trc::AuthEvent::Failed | trc::AuthEvent::Error | trc::AuthEvent::TokenExpired,
             ) => HttpResponse::unauthorized(true),
+            trc::EventType::Resource(trc::ResourceEvent::NotFound) => {
+                RequestError::not_found().into_http_response()
+            }
             _ => self.to_request_error().into_http_response(),
         }
     }
@@ -403,13 +397,16 @@ pub async fn handle_signup_request(
         trc::EventType::Resource(trc::ResourceEvent::BadParameters).from_json_error(err)
     })?;
 
+    println!("[SIGNUP API] Received signup for tenant '{}' ({}), plan: '{:?}', subscriptionId: '{:?}'", 
+        request.tenant_name, request.domain_name, request.plan, request.subscription_id);
+
     let domain_name = request.domain_name.trim().to_ascii_lowercase();
     if domain_name.is_empty() || request.tenant_name.trim().is_empty() || request.admin_username.trim().is_empty() || request.admin_password.trim().is_empty() {
         return Err(trc::ResourceEvent::BadParameters.into_err().details("All fields are required."));
     }
 
     // Determine plan tier and storage quotas matching marketing site offerings
-    let plan_tier = plans::PlanTier::from_str(request.plan.as_deref().unwrap_or("trial"));
+    let plan_tier = plans::PlanTier::from_str(request.plan.as_deref().unwrap_or("basic"));
     let mailbox_quota = plan_tier.mailbox_quota_bytes();
     let max_accounts = plan_tier.default_max_accounts();
 
@@ -423,11 +420,13 @@ pub async fn handle_signup_request(
         return Err(trc::ResourceEvent::BadParameters.into_err().details("Domain is already registered."));
     }
 
-    // Construct Tenant with plan quotas
+    // Construct Tenant with explicit plan_tier, subscription_id, and storage quotas
     let tenant = registry::schema::structs::Tenant {
         name: request.tenant_name.trim().to_string(),
         created_at: registry::types::datetime::UTCDateTime::now(),
-        logo: request.subscription_id.map(|s| s.trim().to_string()),
+        plan_tier: Some(plan_tier.as_str().to_string()),
+        subscription_id: request.subscription_id.as_ref().map(|s| s.trim().to_string()),
+        logo: None,
         quotas: utils::map::vec_map::VecMap::from_iter([
             (registry::schema::enums::TenantStorageQuota::MaxAccounts, max_accounts),
             (registry::schema::enums::TenantStorageQuota::MaxDiskQuota, mailbox_quota),

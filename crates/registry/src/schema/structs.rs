@@ -5766,6 +5766,10 @@ pub struct Tenant {
     pub created_at: UTCDateTime,
     #[serde(rename = "logo")]
     pub logo: Option<String>,
+    #[serde(rename = "planTier", skip_serializing_if = "Option::is_none")]
+    pub plan_tier: Option<String>,
+    #[serde(rename = "subscriptionId", skip_serializing_if = "Option::is_none")]
+    pub subscription_id: Option<String>,
     #[serde(rename = "roles")]
     pub roles: Roles,
     #[serde(rename = "permissions")]

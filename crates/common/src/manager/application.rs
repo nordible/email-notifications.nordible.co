@@ -70,38 +70,88 @@ impl WebApplications {
     }
 
     pub async fn serve(&self, prefix: &str, path: &str) -> trc::Result<Option<AppResource>> {
-        if let Some(routes) = self.routes.load().get(prefix)
+        let routes_map = self.routes.load();
+        if let Some(routes) = routes_map.get(prefix)
             && let Some((is_index, resource)) = routes
                 .get(path)
                 .map(|res| (path == "index.html", res))
                 .or_else(|| routes.get("index.html").map(|res| (true, res)))
         {
-            tokio::fs::read(&resource.contents)
-                .await
-                .map(|mut contents| {
+            match tokio::fs::read(&resource.contents).await {
+                Ok(mut contents) => {
                     if is_index && let Ok(html) = std::str::from_utf8(&contents) {
                         contents = html
                             .replace("<base href=\"/\"", &format!("<base href=\"/{prefix}/\""))
                             .into_bytes();
                     }
 
-                    Some(AppResource {
+                    return Ok(Some(AppResource {
                         resource: Resource {
                             content_type: resource.content_type.clone(),
                             contents,
                         },
                         no_cache: is_index,
-                    })
-                })
-                .map_err(|err| {
-                    trc::ResourceEvent::Error
-                        .reason(err)
-                        .ctx(trc::Key::Path, path.to_string())
-                        .caused_by(trc::location!())
-                })
-        } else {
-            Ok(None)
+                    }));
+                }
+                Err(err) => {
+                    trc::event!(
+                        Resource(trc::ResourceEvent::Error),
+                        Reason = err.to_string(),
+                        Details = format!("Failed to read unpacked application file at {:?}", resource.contents)
+                    );
+                }
+            }
         }
+
+        // Fallback for admin / account prefixes using embedded webui.zip if temp files were missing or route unloaded
+        if prefix == "admin" || prefix == "account" {
+            let zip_bytes = include_bytes!("../../../../resources/webui.zip");
+            let prefix_owned = prefix.to_string();
+            let path_owned = path.to_string();
+            let is_index = path_owned.is_empty() || path_owned == "index.html" || !path_owned.contains('.');
+            let target_file = if is_index { "index.html".to_string() } else { path_owned };
+
+            let fallback_result = tokio::task::spawn_blocking(move || {
+                let mut archive = zip::ZipArchive::new(Cursor::new(zip_bytes)).ok()?;
+                let is_target_ok = archive.by_name(&target_file).is_ok();
+                let target_name = if is_target_ok { &target_file } else { "index.html" };
+                let mut file = archive.by_name(target_name).ok()?;
+                let mut contents = Vec::new();
+                file.read_to_end(&mut contents).ok()?;
+
+                let content_type = match target_file.rsplit_once('.').map(|(_, ext)| ext).unwrap_or_default() {
+                    "html" => "text/html",
+                    "css" => "text/css",
+                    "wasm" => "application/wasm",
+                    "js" => "application/javascript",
+                    "json" => "application/json",
+                    "png" => "image/png",
+                    "svg" => "image/svg+xml",
+                    "ico" => "image/x-icon",
+                    _ => "application/octet-stream",
+                };
+
+                if is_index && let Ok(html) = std::str::from_utf8(&contents) {
+                    contents = html
+                        .replace("<base href=\"/\"", &format!("<base href=\"/{prefix_owned}/\""))
+                        .into_bytes();
+                }
+
+                Some(AppResource {
+                    resource: Resource {
+                        content_type: content_type.into(),
+                        contents,
+                    },
+                    no_cache: is_index,
+                })
+            }).await.unwrap_or(None);
+
+            if fallback_result.is_some() {
+                return Ok(fallback_result);
+            }
+        }
+
+        Ok(None)
     }
 
     pub async fn reload(&self, bp: &mut Bootstrap) {
@@ -365,11 +415,8 @@ fn unpack_error(err: std::io::Error) -> trc::Error {
         .details("Failed to unpack application bundle")
 }
 
-impl Drop for TempDir {
-    fn drop(&mut self) {
-        let _ = std::fs::remove_dir_all(&self.path);
-    }
-}
+// TempDir cleanup is handled explicitly by clean() on unpack, preventing premature deletion when cloned
+
 
 impl Default for WebApplications {
     fn default() -> Self {

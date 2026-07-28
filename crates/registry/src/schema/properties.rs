@@ -868,6 +868,7 @@ pub enum Property {
     PasswordMinStrength = 112,
     Path = 380,
     Period = 646,
+    PlanTier = 999,
     Permissions = 48,
     PingInterval = 583,
     Pipelining = 524,

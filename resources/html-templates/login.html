@@ -16,32 +16,17 @@
         }
 
         :root {
-            --bg: #f5f5f4;
-            --card: #fff;
-            --border: #e5e5e3;
-            --text: #1a1a18;
-            --muted: #6b6b67;
-            --accent: #1a1a18;
-            --accent-fg: #fff;
-            --info: #185fa5;
-            --success: #0f7a3c;
-            --radius: 10px;
-            --input-bg: #fafaf9;
-        }
-
-        @media(prefers-color-scheme:dark) {
-            :root {
-                --bg: #18181b;
-                --card: #1f1f23;
-                --border: #2e2e33;
-                --text: #f4f4f2;
-                --muted: #9b9b95;
-                --accent: #f4f4f2;
-                --accent-fg: #18181b;
-                --info: #5faee3;
-                --success: #58c98a;
-                --input-bg: #2a2a2e;
-            }
+            --bg: #F8FAFC;
+            --card: #FFFFFF;
+            --border: #E2E8F0;
+            --text: #0F172A;
+            --muted: #64748B;
+            --accent: #145BFF;
+            --accent-fg: #FFFFFF;
+            --info: #0284C7;
+            --success: #16A34A;
+            --radius: 16px;
+            --input-bg: #F8FAFC;
         }
 
         body {
@@ -125,19 +110,9 @@
         }
 
         .alert.success {
-            background: color-mix(in srgb, #0f7a3c 10%, transparent);
-            border-color: color-mix(in srgb, #0f7a3c 30%, transparent);
-            color: #0f7a3c;
-        }
-
-        @media(prefers-color-scheme:dark) {
-            .alert {
-                color: #f4839a
-            }
-
-            .alert.success {
-                color: #58c98a;
-            }
+            background: color-mix(in srgb, #16A34A 10%, transparent);
+            border-color: color-mix(in srgb, #16A34A 30%, transparent);
+            color: #16A34A;
         }
 
         .alert svg {

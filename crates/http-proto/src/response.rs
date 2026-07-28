@@ -256,7 +256,16 @@ impl HttpResponse {
                         .boxed(),
                 ),
         }
-        .unwrap()
+        .unwrap_or_else(|_| {
+            hyper::Response::builder()
+                .status(StatusCode::INTERNAL_SERVER_ERROR)
+                .body(
+                    Full::new(Bytes::from("Internal Server Error"))
+                        .map_err(|never| match never {})
+                        .boxed(),
+                )
+                .unwrap()
+        })
     }
 
     pub fn body(&self) -> &HttpResponseBody {

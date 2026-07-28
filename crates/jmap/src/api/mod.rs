@@ -78,6 +78,12 @@ impl ToRequestError for trc::Error {
             .and_then(|v| v.as_str());
         let details = details_or_reason.unwrap_or_else(|| self.as_ref().message());
 
+        println!("\n=================== [SERVER ERROR TRACE] ===================");
+        println!("Event: {:?}", self.as_ref());
+        println!("Message: {}", self.as_ref().message());
+        println!("Details: {}", details);
+        println!("===========================================================\n");
+
         match self.as_ref() {
             trc::EventType::Jmap(cause) => match cause {
                 trc::JmapEvent::UnknownCapability => RequestError::unknown_capability(details),
