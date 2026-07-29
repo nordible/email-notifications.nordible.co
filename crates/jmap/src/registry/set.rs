@@ -742,12 +742,12 @@ impl RegistrySet for Server {
                                                 continue;
                                             }
                                         };
-                                        let update_url = format!("{}/api/subscription/update-quantity", marketing_site_url.trim_end_matches('/'));
+                                        let update_url = format!("{}/api/subscription/upgrade", marketing_site_url.trim_end_matches('/'));
                                         let res = client.post(&update_url)
                                             .header("X-API-Key", api_key)
                                             .json(&serde_json::json!({
                                                 "subscriptionId": subscription_id,
-                                                "quantity": count
+                                                "newQuantity": count
                                             }))
                                             .send()
                                             .await;

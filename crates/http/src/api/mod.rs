@@ -383,6 +383,7 @@ struct SignupRequest {
     admin_password: String,
     recovery_email: Option<String>,
     plan: Option<String>,
+    mailbox_quota_bytes: Option<u64>,
     dkim_selector: Option<String>,
     dkim_private_key: Option<String>,
     subscription_id: Option<String>,
@@ -407,7 +408,7 @@ pub async fn handle_signup_request(
 
     // Determine plan tier and storage quotas matching marketing site offerings
     let plan_tier = plans::PlanTier::from_str(request.plan.as_deref().unwrap_or("basic"));
-    let mailbox_quota = plan_tier.mailbox_quota_bytes();
+    let mailbox_quota = request.mailbox_quota_bytes.unwrap_or(plans::DEFAULT_MAILBOX_QUOTA_BYTES);
     let max_accounts = plan_tier.default_max_accounts();
 
     // Validate domain format simply (must contain at least one dot)
