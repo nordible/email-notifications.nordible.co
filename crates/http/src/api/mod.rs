@@ -79,6 +79,15 @@ impl ManagementApi for Server {
                 ))
                 .await
             }
+            "update-capacity" if is_post => {
+                self.is_http_anonymous_request_allowed(session.remote_ip)
+                    .await?;
+                Box::pin(handle_update_capacity_request(
+                    self,
+                    body.ok_or_else(|| trc::LimitEvent::SizeRequest.into_err())?,
+                ))
+                .await
+            }
             "auth" if is_post => {
                 self.is_http_anonymous_request_allowed(session.remote_ip)
                     .await?;
@@ -384,6 +393,7 @@ struct SignupRequest {
     recovery_email: Option<String>,
     plan: Option<String>,
     mailbox_quota_bytes: Option<u64>,
+    quantity: Option<u64>,
     dkim_selector: Option<String>,
     dkim_private_key: Option<String>,
     subscription_id: Option<String>,
@@ -398,8 +408,8 @@ pub async fn handle_signup_request(
         trc::EventType::Resource(trc::ResourceEvent::BadParameters).from_json_error(err)
     })?;
 
-    println!("[SIGNUP API] Received signup for tenant '{}' ({}), plan: '{:?}', subscriptionId: '{:?}'", 
-        request.tenant_name, request.domain_name, request.plan, request.subscription_id);
+    println!("[SIGNUP API] Received signup for tenant '{}' ({}), plan: '{:?}', quantity: '{:?}', subscriptionId: '{:?}'", 
+        request.tenant_name, request.domain_name, request.plan, request.quantity, request.subscription_id);
 
     let domain_name = request.domain_name.trim().to_ascii_lowercase();
     if domain_name.is_empty() || request.tenant_name.trim().is_empty() || request.admin_username.trim().is_empty() || request.admin_password.trim().is_empty() {
@@ -409,7 +419,7 @@ pub async fn handle_signup_request(
     // Determine plan tier and storage quotas matching marketing site offerings
     let plan_tier = plans::PlanTier::from_str(request.plan.as_deref().unwrap_or("basic"));
     let mailbox_quota = request.mailbox_quota_bytes.unwrap_or(plans::DEFAULT_MAILBOX_QUOTA_BYTES);
-    let max_accounts = plan_tier.default_max_accounts();
+    let max_accounts = request.quantity.unwrap_or(1);
 
     // Validate domain format simply (must contain at least one dot)
     if !domain_name.contains('.') || domain_name.len() < 4 {
@@ -758,4 +768,76 @@ pub async fn handle_reset_confirm(
         .with_content_type("application/json")
         .with_text_body(resp.to_string()))
 }
+
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct UpdateCapacityRequest {
+    subscription_id: Option<String>,
+    tenant_name: Option<String>,
+    max_accounts: u64,
+}
+
+pub async fn handle_update_capacity_request(
+    server: &Server,
+    body: Vec<u8>,
+) -> trc::Result<HttpResponse> {
+    let request: UpdateCapacityRequest = serde_json::from_slice(&body).map_err(|err| {
+        trc::EventType::Resource(trc::ResourceEvent::BadParameters).from_json_error(err)
+    })?;
+
+    let search_term = request.subscription_id.as_deref().or(request.tenant_name.as_deref()).unwrap_or_default();
+    if search_term.is_empty() || request.max_accounts < 1 {
+        return Err(trc::ResourceEvent::BadParameters.into_err().details("subscriptionId/tenantName and valid maxAccounts >= 1 are required."));
+    }
+
+    let query = store::registry::RegistryQuery::new(registry::schema::prelude::ObjectType::Tenant);
+    let tenant_ids: Vec<types::id::Id> = server.registry().query(query).await?;
+    let mut found_tenant_id = None;
+    let mut found_tenant = None;
+
+    for id in tenant_ids {
+        if let Some(tenant) = server.registry().object::<registry::schema::prelude::Tenant>(id).await? {
+            if tenant.subscription_id.as_deref() == Some(search_term) || tenant.name.eq_ignore_ascii_case(search_term) {
+                found_tenant_id = Some(id);
+                found_tenant = Some(tenant);
+                break;
+            }
+        }
+    }
+
+    let (tenant_id, current_tenant) = match (found_tenant_id, found_tenant) {
+        (Some(id), Some(t)) => (id, t),
+        _ => return Err(trc::ResourceEvent::BadParameters.into_err().details("Tenant not found.")),
+    };
+
+    let mut updated_tenant = current_tenant.clone();
+    updated_tenant.quotas.set(registry::schema::enums::TenantStorageQuota::MaxAccounts, request.max_accounts);
+
+    let old_obj = registry::schema::prelude::Object::from(current_tenant);
+    let new_obj = registry::schema::prelude::Object::from(updated_tenant);
+
+    let write_res = server.registry().write(store::registry::write::RegistryWrite::update(tenant_id, &new_obj, &old_obj)).await?;
+
+    match write_res {
+        store::registry::write::RegistryWriteResult::Success(id) => {
+            let mut invalidator = common::cache::invalidate::CacheInvalidationBuilder::default();
+            invalidator.process_update(id, &old_obj, &new_obj);
+            server.invalidate_caches(invalidator).await?;
+        }
+        err => return Err(trc::ResourceEvent::BadParameters.into_err().details(format!("Failed to update tenant capacity: {err:?}"))),
+    }
+
+    let resp = serde_json::json!({
+        "success": true,
+        "subscriptionId": request.subscription_id,
+        "maxAccounts": request.max_accounts,
+        "message": format!("Tenant account limit updated to {} seats.", request.max_accounts),
+    });
+
+    Ok(HttpResponse::new(StatusCode::OK)
+        .with_no_cache()
+        .with_content_type("application/json")
+        .with_text_body(resp.to_string()))
+}
+
 

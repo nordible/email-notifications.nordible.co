@@ -145,14 +145,19 @@ All documentation is available at [nordible.co/docs](https://nordible.co/docs/in
 Run the following to run the server:
 
   ```bash
- cargo check && cargo run --package nordiblemail -- -c data/config.toml
+ cargo check && cargo run --package nordiblemail -- -c local_config.json
   ```
+
+Note: Ensure `local_config.json` sets the SQLite database file path to `./data/stalwart.db`:
+```json
+{"@type":"Sqlite","path":"./data/stalwart.db","poolWorkers":null,"poolMaxConnections":10}
+```
 
 When starting the server for the first time without a configuration file, NordibleMail enters **Bootstrap Mode**:
 1. A temporary administrator credential (`username: admin`, `password: <random_16_char_pass>`) will be printed in the terminal console.
 2. Open `http://localhost:8080/admin` to complete the initial setup wizard and provision the primary server administrator.
 
-To reset and re-trigger the initial setup screen from scratch, stop the server and delete the existing database/config files (`data`, `data-wal`, `data-shm`). Alternatively, set `NORDIBLEMAIL_RECOVERY_MODE=true` and `NORDIBLEMAIL_RECOVERY_ADMIN=admin:<password>` in your environment to access emergency administration.
+To reset and re-trigger the initial setup screen from scratch, stop the server and delete the existing database/config files (`data/stalwart.db`, `local_config.json`). Alternatively, set `NORDIBLEMAIL_RECOVERY_MODE=true` and `NORDIBLEMAIL_RECOVERY_ADMIN=admin:<password>` in your environment to access emergency administration.
 
 ## Deployment
 
