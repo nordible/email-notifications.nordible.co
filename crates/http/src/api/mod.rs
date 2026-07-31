@@ -125,6 +125,19 @@ impl ManagementApi for Server {
                     Err(trc::ResourceEvent::NotFound.into_err())
                 }
             }
+            "tenant" => {
+                if let Some(identifier) = path.get(1).copied() {
+                    self.is_http_anonymous_request_allowed(session.remote_ip)
+                        .await?;
+                    Box::pin(handle_tenant_info_request(
+                        self,
+                        decode_path_element(identifier).as_ref(),
+                    ))
+                    .await
+                } else {
+                    Err(trc::ResourceEvent::NotFound.into_err())
+                }
+            }
             "account" => {
                 // Authenticate request
                 let (_in_flight, access_token) = self.authenticate_headers(req, session).await?;
@@ -496,7 +509,8 @@ pub async fn handle_signup_request(
         quotas: utils::map::vec_map::VecMap::from_iter([
             (registry::schema::enums::StorageQuota::MaxDiskQuota, mailbox_quota),
         ]),
-        description: request.recovery_email.clone(),
+        recovery_email: request.recovery_email.clone(),
+        description: None,
         ..Default::default()
     });
 
@@ -785,8 +799,10 @@ pub async fn handle_update_capacity_request(
         trc::EventType::Resource(trc::ResourceEvent::BadParameters).from_json_error(err)
     })?;
 
-    let search_term = request.subscription_id.as_deref().or(request.tenant_name.as_deref()).unwrap_or_default();
-    if search_term.is_empty() || request.max_accounts < 1 {
+    let sub_id = request.subscription_id.as_deref().unwrap_or_default().trim();
+    let tenant_name = request.tenant_name.as_deref().unwrap_or_default().trim();
+
+    if (sub_id.is_empty() && tenant_name.is_empty()) || request.max_accounts < 1 {
         return Err(trc::ResourceEvent::BadParameters.into_err().details("subscriptionId/tenantName and valid maxAccounts >= 1 are required."));
     }
 
@@ -797,7 +813,9 @@ pub async fn handle_update_capacity_request(
 
     for id in tenant_ids {
         if let Some(tenant) = server.registry().object::<registry::schema::prelude::Tenant>(id).await? {
-            if tenant.subscription_id.as_deref() == Some(search_term) || tenant.name.eq_ignore_ascii_case(search_term) {
+            let matches_sub = !sub_id.is_empty() && tenant.subscription_id.as_deref() == Some(sub_id);
+            let matches_name = !tenant_name.is_empty() && tenant.name.eq_ignore_ascii_case(tenant_name);
+            if matches_sub || matches_name {
                 found_tenant_id = Some(id);
                 found_tenant = Some(tenant);
                 break;
@@ -830,6 +848,7 @@ pub async fn handle_update_capacity_request(
     let resp = serde_json::json!({
         "success": true,
         "subscriptionId": request.subscription_id,
+        "tenantName": request.tenant_name,
         "maxAccounts": request.max_accounts,
         "message": format!("Tenant account limit updated to {} seats.", request.max_accounts),
     });
@@ -838,6 +857,44 @@ pub async fn handle_update_capacity_request(
         .with_no_cache()
         .with_content_type("application/json")
         .with_text_body(resp.to_string()))
+}
+
+pub async fn handle_tenant_info_request(
+    server: &Server,
+    identifier: &str,
+) -> trc::Result<HttpResponse> {
+    let search_term = identifier.trim();
+    if search_term.is_empty() {
+        return Err(trc::ResourceEvent::BadParameters.into_err().details("Tenant domain or subscription ID is required."));
+    }
+
+    let query = store::registry::RegistryQuery::new(registry::schema::prelude::ObjectType::Tenant);
+    let tenant_ids: Vec<types::id::Id> = server.registry().query(query).await?;
+
+    for id in tenant_ids {
+        if let Some(tenant) = server.registry().object::<registry::schema::prelude::Tenant>(id).await? {
+            let matches_sub = tenant.subscription_id.as_deref() == Some(search_term);
+            let matches_name = tenant.name.eq_ignore_ascii_case(search_term);
+            if matches_sub || matches_name {
+                let max_accounts = tenant.quotas.get(&registry::schema::enums::TenantStorageQuota::MaxAccounts).copied().unwrap_or(1);
+                let resp = serde_json::json!({
+                    "success": true,
+                    "tenantName": tenant.name,
+                    "domain": tenant.name,
+                    "subscriptionId": tenant.subscription_id,
+                    "maxAccounts": max_accounts,
+                    "planId": tenant.plan_tier.as_deref().unwrap_or("basic"),
+                });
+
+                return Ok(HttpResponse::new(StatusCode::OK)
+                    .with_no_cache()
+                    .with_content_type("application/json")
+                    .with_text_body(resp.to_string()));
+            }
+        }
+    }
+
+    Err(trc::ResourceEvent::BadParameters.into_err().details("Tenant not found."))
 }
 
 

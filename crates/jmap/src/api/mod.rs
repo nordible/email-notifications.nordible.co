@@ -82,6 +82,7 @@ impl ToRequestError for trc::Error {
         println!("Event: {:?}", self.as_ref());
         println!("Message: {}", self.as_ref().message());
         println!("Details: {}", details);
+        println!("Full Event Context: {self:#?}");
         println!("===========================================================\n");
 
         match self.as_ref() {

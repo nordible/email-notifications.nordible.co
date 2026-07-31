@@ -46521,6 +46521,7 @@ impl Pickle for UserAccount {
         self.locale.pickle(out);
         self.time_zone.pickle(out);
         self.encryption_at_rest.pickle(out);
+        self.recovery_email.pickle(out);
     }
 
     fn unpickle(stream: &mut crate::pickle::PickledStream<'_>) -> Option<Self> {
@@ -46536,9 +46537,14 @@ impl Pickle for UserAccount {
         this.quotas = Pickle::unpickle(stream)?;
         this.aliases = Pickle::unpickle(stream)?;
         this.description = Pickle::unpickle(stream)?;
-        this.locale = Pickle::unpickle(stream)?;
-        this.time_zone = Pickle::unpickle(stream)?;
-        this.encryption_at_rest = Pickle::unpickle(stream)?;
+        this.locale = Pickle::unpickle(stream).unwrap_or(Locale::EnUS);
+        this.time_zone = if !stream.eof() { Pickle::unpickle(stream).unwrap_or_default() } else { None };
+        this.encryption_at_rest = if !stream.eof() { Pickle::unpickle(stream).unwrap_or_default() } else { Default::default() };
+        this.recovery_email = if !stream.eof() {
+            Pickle::unpickle(stream).unwrap_or_default()
+        } else {
+            None
+        };
         Some(this)
     }
 }
@@ -46557,6 +46563,7 @@ impl Default for UserAccount {
             quotas: Default::default(),
             aliases: Default::default(),
             description: Default::default(),
+            recovery_email: Default::default(),
             locale: Locale::EnUS,
             time_zone: Default::default(),
             encryption_at_rest: Default::default(),

@@ -180,12 +180,18 @@ impl HttpResponse {
     }
 
     pub fn with_cors_unrestricted(mut self) -> Self {
+        if let Some(headers) = self.builder.headers_ref() {
+            if headers.contains_key(header::ACCESS_CONTROL_ALLOW_ORIGIN) {
+                return self;
+            }
+        }
+
         self.builder = self
             .builder
             .header(header::ACCESS_CONTROL_ALLOW_ORIGIN, "*")
             .header(
                 header::ACCESS_CONTROL_ALLOW_HEADERS,
-                "Authorization, Content-Type, Accept, X-Requested-With",
+                "*",
             )
             .header(
                 header::ACCESS_CONTROL_ALLOW_METHODS,
@@ -199,6 +205,12 @@ impl HttpResponse {
             return self;
         };
 
+        if let Some(headers) = self.builder.headers_ref() {
+            if headers.contains_key(header::ACCESS_CONTROL_ALLOW_ORIGIN) {
+                return self;
+            }
+        }
+
         self.builder = self
             .builder
             .header(header::ACCESS_CONTROL_ALLOW_ORIGIN, origin)
@@ -206,7 +218,7 @@ impl HttpResponse {
             .header(header::VARY, "Origin")
             .header(
                 header::ACCESS_CONTROL_ALLOW_HEADERS,
-                "Authorization, Content-Type, Accept, X-Requested-With",
+                "*",
             )
             .header(
                 header::ACCESS_CONTROL_ALLOW_METHODS,

@@ -6173,6 +6173,8 @@ pub struct UserAccount {
     pub aliases: List<EmailAlias>,
     #[serde(rename = "description")]
     pub description: Option<String>,
+    #[serde(rename = "recoveryEmail")]
+    pub recovery_email: Option<String>,
     #[serde(rename = "locale")]
     pub locale: Locale,
     #[serde(rename = "timeZone")]
