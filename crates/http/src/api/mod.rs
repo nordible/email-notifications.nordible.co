@@ -36,6 +36,7 @@ use hyper::{
 use jmap::api::{ToJmapHttpResponse, ToRequestError};
 use jmap_proto::error::request::RequestError;
 use registry::schema::enums::Permission;
+use registry::types::id::ObjectId;
 use std::time::Duration;
 use utils::url_params::UrlParams;
 
@@ -732,28 +733,26 @@ pub async fn handle_reset_confirm(
         }
     };
 
-    let current_account = match server.registry().object::<registry::schema::prelude::Account>(account_id).await? {
-        Some(acc) => acc,
+    let old_account_obj = match server.registry().get(ObjectId::new(registry::schema::prelude::ObjectType::Account, account_id)).await? {
+        Some(obj) => obj,
         None => {
             return Err(trc::ResourceEvent::BadParameters.into_err().details("Failed to load account details."));
         }
     };
 
-    let mut updated_account = current_account.clone().into_user().ok_or_else(|| {
-        trc::ResourceEvent::BadParameters.into_err().details("Only user accounts can reset passwords.")
-    })?;
+    let mut updated_account_obj = old_account_obj.clone();
+    if let registry::schema::prelude::ObjectInner::Account(registry::schema::structs::Account::User(ref mut user)) = updated_account_obj.inner {
+        let password_hash = directory::core::secret::hash_secret(
+            server.core.network.security.password_hash_algorithm,
+            password.to_string().into_bytes(),
+        )
+        .await
+        .unwrap_or_default();
 
-    let password_hash = directory::core::secret::hash_secret(
-        server.core.network.security.password_hash_algorithm,
-        password.to_string().into_bytes(),
-    )
-    .await
-    .unwrap_or_default();
-
-    updated_account.set_password(password_hash);
-
-    let old_account_obj = registry::schema::prelude::Object::from(current_account);
-    let updated_account_obj = registry::schema::prelude::Object::from(registry::schema::structs::Account::User(updated_account));
+        user.set_password(password_hash);
+    } else {
+        return Err(trc::ResourceEvent::BadParameters.into_err().details("Only user accounts can reset passwords."));
+    }
 
     let write_result = server.registry()
         .write(store::registry::write::RegistryWrite::update(
@@ -774,7 +773,7 @@ pub async fn handle_reset_confirm(
 
     let resp = serde_json::json!({
         "success": true,
-        "message": "Password updated successfully.",
+        "message": "Password reset successfully."
     });
 
     Ok(HttpResponse::new(StatusCode::OK)
@@ -789,6 +788,7 @@ struct UpdateCapacityRequest {
     subscription_id: Option<String>,
     tenant_name: Option<String>,
     max_accounts: u64,
+    max_disk_quota: Option<u64>,
 }
 
 pub async fn handle_update_capacity_request(
@@ -809,7 +809,6 @@ pub async fn handle_update_capacity_request(
     let query = store::registry::RegistryQuery::new(registry::schema::prelude::ObjectType::Tenant);
     let tenant_ids: Vec<types::id::Id> = server.registry().query(query).await?;
     let mut found_tenant_id = None;
-    let mut found_tenant = None;
 
     for id in tenant_ids {
         if let Some(tenant) = server.registry().object::<registry::schema::prelude::Tenant>(id).await? {
@@ -817,22 +816,31 @@ pub async fn handle_update_capacity_request(
             let matches_name = !tenant_name.is_empty() && tenant.name.eq_ignore_ascii_case(tenant_name);
             if matches_sub || matches_name {
                 found_tenant_id = Some(id);
-                found_tenant = Some(tenant);
                 break;
             }
         }
     }
 
-    let (tenant_id, current_tenant) = match (found_tenant_id, found_tenant) {
-        (Some(id), Some(t)) => (id, t),
-        _ => return Err(trc::ResourceEvent::BadParameters.into_err().details("Tenant not found.")),
+    let tenant_id = match found_tenant_id {
+        Some(id) => id,
+        None => return Err(trc::ResourceEvent::BadParameters.into_err().details("Tenant not found.")),
     };
 
-    let mut updated_tenant = current_tenant.clone();
-    updated_tenant.quotas.set(registry::schema::enums::TenantStorageQuota::MaxAccounts, request.max_accounts);
+    let old_obj = match server.registry().get(ObjectId::new(registry::schema::prelude::ObjectType::Tenant, tenant_id)).await? {
+        Some(obj) => obj,
+        None => return Err(trc::ResourceEvent::BadParameters.into_err().details("Tenant not found.")),
+    };
 
-    let old_obj = registry::schema::prelude::Object::from(current_tenant);
-    let new_obj = registry::schema::prelude::Object::from(updated_tenant);
+    let mut new_obj = old_obj.clone();
+    if let registry::schema::prelude::ObjectInner::Tenant(ref mut tenant) = new_obj.inner {
+        tenant.quotas.set(registry::schema::enums::TenantStorageQuota::MaxAccounts, request.max_accounts);
+        
+        if let Some(max_disk_bytes) = request.max_disk_quota {
+            tenant.quotas.set(registry::schema::enums::TenantStorageQuota::MaxDiskQuota, max_disk_bytes);
+        }
+    } else {
+        return Err(trc::ResourceEvent::BadParameters.into_err().details("Failed to parse stored tenant object."));
+    }
 
     let write_res = server.registry().write(store::registry::write::RegistryWrite::update(tenant_id, &new_obj, &old_obj)).await?;
 
