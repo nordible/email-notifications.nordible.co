@@ -115,6 +115,7 @@ pub struct TenantCache {
     pub quota_disk: u64,
     pub quota_objects: Option<Box<TenantQuota>>,
     pub permissions: Option<Box<PermissionsGroup>>,
+    pub subscription_expires_at: Option<registry::types::datetime::UTCDateTime>,
 }
 
 #[derive(Debug, Clone, Default)]

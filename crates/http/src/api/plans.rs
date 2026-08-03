@@ -7,6 +7,7 @@
 use serde::{Deserialize, Serialize};
 
 pub const DEFAULT_MAILBOX_QUOTA_BYTES: u64 = 5 * 1024 * 1024 * 1024; // 5 GB default fallback
+pub const DEFAULT_CURRENCY: &str = "USD";
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]

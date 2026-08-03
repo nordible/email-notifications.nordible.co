@@ -5772,6 +5772,8 @@ pub struct Tenant {
     pub subscription_id: Option<String>,
     #[serde(rename = "currency", skip_serializing_if = "Option::is_none")]
     pub currency: Option<String>,
+    #[serde(rename = "subscriptionExpiresAt", skip_serializing_if = "Option::is_none")]
+    pub subscription_expires_at: Option<UTCDateTime>,
     #[serde(rename = "roles")]
     pub roles: Roles,
     #[serde(rename = "permissions")]

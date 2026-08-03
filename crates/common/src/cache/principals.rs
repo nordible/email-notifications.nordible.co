@@ -808,6 +808,7 @@ impl Server {
                     quota_disk,
                     quota_objects: quota_objects.map(Box::new),
                     permissions,
+                    subscription_expires_at: tenant.subscription_expires_at,
                 });
 
                 let _ = guard.insert(cache.clone());

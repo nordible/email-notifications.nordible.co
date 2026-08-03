@@ -43746,6 +43746,7 @@ impl Pickle for Tenant {
         self.plan_tier.pickle(out);
         self.subscription_id.pickle(out);
         self.currency.pickle(out);
+        self.subscription_expires_at.pickle(out);
     }
 
     fn unpickle(stream: &mut crate::pickle::PickledStream<'_>) -> Option<Self> {
@@ -43759,6 +43760,7 @@ impl Pickle for Tenant {
         this.plan_tier = Pickle::unpickle(stream).unwrap_or_default();
         this.subscription_id = Pickle::unpickle(stream).unwrap_or_default();
         this.currency = Pickle::unpickle(stream).unwrap_or_default();
+        this.subscription_expires_at = Pickle::unpickle(stream).unwrap_or_default();
         Some(this)
     }
 }
@@ -43772,6 +43774,7 @@ impl Default for Tenant {
             plan_tier: Default::default(),
             subscription_id: Default::default(),
             currency: Default::default(),
+            subscription_expires_at: Default::default(),
             roles: Default::default(),
             permissions: Default::default(),
             quotas: Default::default(),
@@ -43781,13 +43784,17 @@ impl Default for Tenant {
 
 impl IntoValue for Tenant {
     fn into_value(self) -> JmapValue<'static> {
-        let mut map = jmap_tools::Map::with_capacity(10);
+        let mut map = jmap_tools::Map::with_capacity(11);
         map.insert_unchecked(Property::Name, self.name.into_value());
         map.insert_unchecked(Property::CreatedAt, self.created_at.into_value());
         map.insert_unchecked(Property::Logo, self.logo.into_value());
         map.insert_unchecked(Property::PlanTier, self.plan_tier.into_value());
         map.insert_unchecked(Property::SubscriptionId, self.subscription_id.into_value());
         map.insert_unchecked(Property::Currency, self.currency.into_value());
+        let expires_at = self.subscription_expires_at.unwrap_or_else(|| {
+            crate::types::datetime::UTCDateTime::from_timestamp(self.created_at.timestamp() + 30 * 86400)
+        });
+        map.insert_unchecked(Property::SubscriptionExpiresAt, expires_at.into_value());
         map.insert_unchecked(Property::Roles, self.roles.into_value());
         map.insert_unchecked(Property::Permissions, self.permissions.into_value());
         map.insert_unchecked(Property::Quotas, self.quotas.into_value());
@@ -43808,6 +43815,7 @@ impl RegistryJsonPropertyPatch for Tenant {
             Some(Property::PlanTier) => self.plan_tier.patch(pointer, value),
             Some(Property::SubscriptionId) => self.subscription_id.patch(pointer, value),
             Some(Property::Currency) => self.currency.patch(pointer, value),
+            Some(Property::SubscriptionExpiresAt) => self.subscription_expires_at.patch(pointer, value),
             Some(Property::Roles) => self.roles.patch(pointer, value),
             Some(Property::Permissions) => self.permissions.patch(pointer, value),
             Some(Property::Quotas) => self.quotas.patch(pointer, value),

@@ -71,9 +71,17 @@ impl Server {
         #[cfg(feature = "enterprise")]
         {
             if let Some(tenant_id) = tenant_id {
+                let tenant = self.tenant(tenant_id).await.caused_by(trc::location!())?;
+
+                // Enforce subscription expiration: revoke all mailbox access if expired
+                if let Some(expires_at) = tenant.subscription_expires_at {
+                    if registry::types::datetime::UTCDateTime::now() > expires_at {
+                        return Ok(PermissionsGroup::default());
+                    }
+                }
+
                 if self.is_enterprise_edition() {
                     // Limit tenant permissions
-                    let tenant = self.tenant(tenant_id).await.caused_by(trc::location!())?;
                     let (mut tenant_permissions, tenant_roles) =
                         if let Some(permissions) = &tenant.permissions {
                             if permissions.merge {
