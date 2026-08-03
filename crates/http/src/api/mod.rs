@@ -411,6 +411,7 @@ struct SignupRequest {
     dkim_selector: Option<String>,
     dkim_private_key: Option<String>,
     subscription_id: Option<String>,
+    currency: Option<String>,
 }
 
 pub async fn handle_signup_request(
@@ -422,8 +423,8 @@ pub async fn handle_signup_request(
         trc::EventType::Resource(trc::ResourceEvent::BadParameters).from_json_error(err)
     })?;
 
-    println!("[SIGNUP API] Received signup for tenant '{}' ({}), plan: '{:?}', quantity: '{:?}', subscriptionId: '{:?}'", 
-        request.tenant_name, request.domain_name, request.plan, request.quantity, request.subscription_id);
+    println!("[SIGNUP API] Received signup for tenant '{}' ({}), plan: '{:?}', quantity: '{:?}', subscriptionId: '{:?}', currency: '{:?}'", 
+        request.tenant_name, request.domain_name, request.plan, request.quantity, request.subscription_id, request.currency);
 
     let domain_name = request.domain_name.trim().to_ascii_lowercase();
     if domain_name.is_empty() || request.tenant_name.trim().is_empty() || request.admin_username.trim().is_empty() || request.admin_password.trim().is_empty() {
@@ -445,12 +446,13 @@ pub async fn handle_signup_request(
         return Err(trc::ResourceEvent::BadParameters.into_err().details("Domain is already registered."));
     }
 
-    // Construct Tenant with explicit plan_tier, subscription_id, and storage quotas
+    // Construct Tenant with explicit plan_tier, subscription_id, currency, and storage quotas
     let tenant = registry::schema::structs::Tenant {
         name: request.tenant_name.trim().to_string(),
         created_at: registry::types::datetime::UTCDateTime::now(),
         plan_tier: Some(plan_tier.as_str().to_string()),
         subscription_id: request.subscription_id.as_ref().map(|s| s.trim().to_string()),
+        currency: request.currency.as_ref().map(|s| s.trim().to_string()),
         logo: None,
         quotas: utils::map::vec_map::VecMap::from_iter([
             (registry::schema::enums::TenantStorageQuota::MaxAccounts, max_accounts),
@@ -890,6 +892,7 @@ pub async fn handle_tenant_info_request(
                     "tenantName": tenant.name,
                     "domain": tenant.name,
                     "subscriptionId": tenant.subscription_id,
+                    "currency": tenant.currency.as_deref().unwrap_or("INR"),
                     "maxAccounts": max_accounts,
                     "planId": tenant.plan_tier.as_deref().unwrap_or("basic"),
                 });

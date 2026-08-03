@@ -5770,6 +5770,8 @@ pub struct Tenant {
     pub plan_tier: Option<String>,
     #[serde(rename = "subscriptionId", skip_serializing_if = "Option::is_none")]
     pub subscription_id: Option<String>,
+    #[serde(rename = "currency", skip_serializing_if = "Option::is_none")]
+    pub currency: Option<String>,
     #[serde(rename = "roles")]
     pub roles: Roles,
     #[serde(rename = "permissions")]

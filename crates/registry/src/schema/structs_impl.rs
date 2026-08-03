@@ -43745,6 +43745,7 @@ impl Pickle for Tenant {
         self.quotas.pickle(out);
         self.plan_tier.pickle(out);
         self.subscription_id.pickle(out);
+        self.currency.pickle(out);
     }
 
     fn unpickle(stream: &mut crate::pickle::PickledStream<'_>) -> Option<Self> {
@@ -43757,6 +43758,7 @@ impl Pickle for Tenant {
         this.quotas = Pickle::unpickle(stream)?;
         this.plan_tier = Pickle::unpickle(stream).unwrap_or_default();
         this.subscription_id = Pickle::unpickle(stream).unwrap_or_default();
+        this.currency = Pickle::unpickle(stream).unwrap_or_default();
         Some(this)
     }
 }
@@ -43769,6 +43771,7 @@ impl Default for Tenant {
             logo: Default::default(),
             plan_tier: Default::default(),
             subscription_id: Default::default(),
+            currency: Default::default(),
             roles: Default::default(),
             permissions: Default::default(),
             quotas: Default::default(),
@@ -43784,6 +43787,7 @@ impl IntoValue for Tenant {
         map.insert_unchecked(Property::Logo, self.logo.into_value());
         map.insert_unchecked(Property::PlanTier, self.plan_tier.into_value());
         map.insert_unchecked(Property::SubscriptionId, self.subscription_id.into_value());
+        map.insert_unchecked(Property::Currency, self.currency.into_value());
         map.insert_unchecked(Property::Roles, self.roles.into_value());
         map.insert_unchecked(Property::Permissions, self.permissions.into_value());
         map.insert_unchecked(Property::Quotas, self.quotas.into_value());
@@ -43803,6 +43807,7 @@ impl RegistryJsonPropertyPatch for Tenant {
             Some(Property::Logo) => self.logo.patch(pointer, value),
             Some(Property::PlanTier) => self.plan_tier.patch(pointer, value),
             Some(Property::SubscriptionId) => self.subscription_id.patch(pointer, value),
+            Some(Property::Currency) => self.currency.patch(pointer, value),
             Some(Property::Roles) => self.roles.patch(pointer, value),
             Some(Property::Permissions) => self.permissions.patch(pointer, value),
             Some(Property::Quotas) => self.quotas.patch(pointer, value),

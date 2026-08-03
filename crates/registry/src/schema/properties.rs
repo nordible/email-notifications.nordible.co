@@ -1082,6 +1082,7 @@ pub enum Property {
     SubjectAlternativeNames = 178,
     Subscribe = 368,
     SubscriptionId = 879,
+    Currency = 909,
     Sum = 494,
     Summary = 808,
     SupportedLanguages = 666,
