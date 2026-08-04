@@ -43746,6 +43746,9 @@ impl Pickle for Tenant {
         self.plan_tier.pickle(out);
         self.subscription_id.pickle(out);
         self.currency.pickle(out);
+        self.phone.pickle(out);
+        self.billing_cycle.pickle(out);
+        self.terms_accepted_at.pickle(out);
         self.subscription_expires_at.pickle(out);
     }
 
@@ -43760,6 +43763,9 @@ impl Pickle for Tenant {
         this.plan_tier = Pickle::unpickle(stream).unwrap_or_default();
         this.subscription_id = Pickle::unpickle(stream).unwrap_or_default();
         this.currency = Pickle::unpickle(stream).unwrap_or_default();
+        this.phone = Pickle::unpickle(stream).unwrap_or_default();
+        this.billing_cycle = Pickle::unpickle(stream).unwrap_or_default();
+        this.terms_accepted_at = Pickle::unpickle(stream).unwrap_or_default();
         this.subscription_expires_at = Pickle::unpickle(stream).unwrap_or_default();
         Some(this)
     }
@@ -43774,6 +43780,9 @@ impl Default for Tenant {
             plan_tier: Default::default(),
             subscription_id: Default::default(),
             currency: Default::default(),
+            phone: Default::default(),
+            billing_cycle: Default::default(),
+            terms_accepted_at: Default::default(),
             subscription_expires_at: Default::default(),
             roles: Default::default(),
             permissions: Default::default(),

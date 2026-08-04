@@ -405,7 +405,10 @@ struct SignupRequest {
     admin_username: String,
     admin_password: String,
     recovery_email: Option<String>,
+    phone: Option<String>,
     plan: Option<String>,
+    billing_cycle: Option<String>,
+    terms_accepted_at: Option<registry::types::datetime::UTCDateTime>,
     mailbox_quota_bytes: Option<u64>,
     quantity: Option<u64>,
     dkim_selector: Option<String>,
@@ -461,6 +464,9 @@ pub async fn handle_signup_request(
         plan_tier: Some(plan_tier.as_str().to_string()),
         subscription_id: request.subscription_id.as_ref().map(|s| s.trim().to_string()),
         currency: request.currency.as_ref().map(|s| s.trim().to_string()),
+        phone: request.phone.as_ref().map(|s| s.trim().to_string()),
+        billing_cycle: request.billing_cycle.as_ref().map(|s| s.trim().to_string()),
+        terms_accepted_at: request.terms_accepted_at.or_else(|| Some(registry::types::datetime::UTCDateTime::now())),
         subscription_expires_at: Some(expires_at),
         logo: None,
         quotas: utils::map::vec_map::VecMap::from_iter([
@@ -849,6 +855,13 @@ pub async fn handle_update_capacity_request(
         if let Some(max_disk_bytes) = request.max_disk_quota {
             tenant.quotas.set(registry::schema::enums::TenantStorageQuota::MaxDiskQuota, max_disk_bytes);
         }
+
+        if let Some(ref sub_id) = request.subscription_id {
+            let trimmed = sub_id.trim();
+            if !trimmed.is_empty() {
+                tenant.subscription_id = Some(trimmed.to_string());
+            }
+        }
     } else {
         return Err(trc::ResourceEvent::BadParameters.into_err().details("Failed to parse stored tenant object."));
     }
@@ -899,6 +912,27 @@ pub async fn handle_tenant_info_request(
                 let expires_at = tenant.subscription_expires_at.unwrap_or_else(|| {
                     registry::types::datetime::UTCDateTime::from_timestamp(tenant.created_at.timestamp() + 30 * 86400)
                 });
+                let mut recovery_email = None;
+                let mut phone = None;
+                let tenant_doc_id = id.document_id();
+                let acct_query = store::registry::RegistryQuery::new(registry::schema::prelude::ObjectType::Account).with_tenant(Some(tenant_doc_id));
+                if let Ok(acct_ids) = server.registry().query::<Vec<types::id::Id>>(acct_query).await {
+                    for acct_id in acct_ids {
+                        if let Ok(Some(acct_obj)) = server.registry().get(ObjectId::new(registry::schema::prelude::ObjectType::Account, acct_id)).await {
+                            if let registry::schema::prelude::ObjectInner::Account(account) = acct_obj.inner {
+                                if let registry::schema::structs::Account::User(user_acct) = account {
+                                    if recovery_email.is_none() && user_acct.recovery_email.as_ref().map(|s| !s.trim().is_empty()).unwrap_or(false) {
+                                        recovery_email = user_acct.recovery_email;
+                                    }
+                                    if phone.is_none() && user_acct.description.as_ref().map(|s| !s.trim().is_empty()).unwrap_or(false) {
+                                        phone = user_acct.description;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 let resp = serde_json::json!({
                     "success": true,
                     "tenantName": tenant.name,
@@ -908,6 +942,10 @@ pub async fn handle_tenant_info_request(
                     "subscriptionExpiresAt": expires_at,
                     "maxAccounts": max_accounts,
                     "planId": tenant.plan_tier.as_deref().unwrap_or("basic"),
+                    "recoveryEmail": recovery_email,
+                    "phone": tenant.phone.or(phone),
+                    "billingCycle": tenant.billing_cycle,
+                    "termsAcceptedAt": tenant.terms_accepted_at,
                 });
 
                 return Ok(HttpResponse::new(StatusCode::OK)
