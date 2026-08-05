@@ -804,8 +804,9 @@ pub async fn handle_reset_confirm(
 struct UpdateCapacityRequest {
     subscription_id: Option<String>,
     tenant_name: Option<String>,
-    max_accounts: u64,
+    max_accounts: Option<u64>,
     max_disk_quota: Option<u64>,
+    subscription_expires_at: Option<registry::types::datetime::UTCDateTime>,
 }
 
 pub async fn handle_update_capacity_request(
@@ -819,8 +820,8 @@ pub async fn handle_update_capacity_request(
     let sub_id = request.subscription_id.as_deref().unwrap_or_default().trim();
     let tenant_name = request.tenant_name.as_deref().unwrap_or_default().trim();
 
-    if (sub_id.is_empty() && tenant_name.is_empty()) || request.max_accounts < 1 {
-        return Err(trc::ResourceEvent::BadParameters.into_err().details("subscriptionId/tenantName and valid maxAccounts >= 1 are required."));
+    if sub_id.is_empty() && tenant_name.is_empty() {
+        return Err(trc::ResourceEvent::BadParameters.into_err().details("subscriptionId or tenantName is required."));
     }
 
     let query = store::registry::RegistryQuery::new(registry::schema::prelude::ObjectType::Tenant);
@@ -850,7 +851,11 @@ pub async fn handle_update_capacity_request(
 
     let mut new_obj = old_obj.clone();
     if let registry::schema::prelude::ObjectInner::Tenant(ref mut tenant) = new_obj.inner {
-        tenant.quotas.set(registry::schema::enums::TenantStorageQuota::MaxAccounts, request.max_accounts);
+        if let Some(max_accounts) = request.max_accounts {
+            if max_accounts >= 1 {
+                tenant.quotas.set(registry::schema::enums::TenantStorageQuota::MaxAccounts, max_accounts);
+            }
+        }
         
         if let Some(max_disk_bytes) = request.max_disk_quota {
             tenant.quotas.set(registry::schema::enums::TenantStorageQuota::MaxDiskQuota, max_disk_bytes);
@@ -861,6 +866,10 @@ pub async fn handle_update_capacity_request(
             if !trimmed.is_empty() {
                 tenant.subscription_id = Some(trimmed.to_string());
             }
+        }
+
+        if let Some(expires_at) = request.subscription_expires_at {
+            tenant.subscription_expires_at = Some(expires_at);
         }
     } else {
         return Err(trc::ResourceEvent::BadParameters.into_err().details("Failed to parse stored tenant object."));
@@ -882,7 +891,7 @@ pub async fn handle_update_capacity_request(
         "subscriptionId": request.subscription_id,
         "tenantName": request.tenant_name,
         "maxAccounts": request.max_accounts,
-        "message": format!("Tenant account limit updated to {} seats.", request.max_accounts),
+        "message": format!("Tenant account limit updated to {} seats.", request.max_accounts.unwrap_or(1)),
     });
 
     Ok(HttpResponse::new(StatusCode::OK)
