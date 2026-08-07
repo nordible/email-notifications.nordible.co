@@ -21560,7 +21560,7 @@ impl Default for Http {
             enable_hsts: false,
             use_permissive_cors: false,
             response_headers: Default::default(),
-            use_x_forwarded: false,
+            use_x_forwarded: true,
             redirect_root: Some("/account".to_string()),
         }
     }
