@@ -1,0 +1,10 @@
+/.vscode/
+/target/
+*/target/
+**/*.rs.bk
+Cargo.lock
+/.idea/
+
+.cosine
+
+opentelemetry-otlp/tests/integration_test/result.json
