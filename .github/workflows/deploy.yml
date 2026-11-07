@@ -3,6 +3,7 @@ name: Deploy to Hetzner
 on:
   push:
     branches:
+      - master
       - main
     paths:
       - "crates/**"
@@ -56,7 +57,7 @@ jobs:
     name: Deploy to Hetzner VPS
     needs: build-and-push
     runs-on: ubuntu-latest
-    if: github.ref_name == 'main'
+    if: github.ref_name == 'master' || github.ref_name == 'main'
     permissions:
       contents: read
       packages: read

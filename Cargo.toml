@@ -72,3 +72,11 @@ incremental = false
 debug-assertions = false
 overflow-checks = false
 rpath = false
+
+[patch."https://github.com/stalwartlabs/opentelemetry-rust"]
+opentelemetry = { path = "crates/opentelemetry-rust/opentelemetry" }
+opentelemetry_sdk = { path = "crates/opentelemetry-rust/opentelemetry-sdk" }
+opentelemetry-otlp = { path = "crates/opentelemetry-rust/opentelemetry-otlp" }
+opentelemetry-semantic-conventions = { path = "crates/opentelemetry-rust/opentelemetry-semantic-conventions" }
+opentelemetry-http = { path = "crates/opentelemetry-rust/opentelemetry-http" }
+opentelemetry-proto = { path = "crates/opentelemetry-rust/opentelemetry-proto" }
