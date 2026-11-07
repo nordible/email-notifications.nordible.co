@@ -24,6 +24,10 @@ use common::{
     auth::{AccessToken, oauth::GrantType},
     manager::application::Resource,
 };
+use email::message::delivery::{IngestMessage, IngestRecipient, LocalDeliveryStatus, MailDelivery};
+use mail_builder::MessageBuilder;
+use store::write::BatchBuilder;
+use trc::AddContext;
 use http_body_util::{StreamBody, combinators::BoxBody};
 use http_proto::{
     HttpRequest, HttpResponse, HttpSessionData, ToHttpResponse,
@@ -643,6 +647,22 @@ static RESET_TOKENS: LazyLock<Mutex<HashMap<String, ResetToken>>> = LazyLock::ne
     Mutex::new(HashMap::new())
 });
 
+fn mask_email(email: &str) -> String {
+    if let Some((user, domain)) = email.split_once('@') {
+        let len = user.len();
+        let masked_user = if len <= 2 {
+            "*".repeat(len)
+        } else if len <= 4 {
+            format!("{}**{}", &user[..1], &user[len - 1..])
+        } else {
+            format!("{}***{}", &user[..2], &user[len - 2..])
+        };
+        format!("{}@{}", masked_user, domain)
+    } else {
+        "***".to_string()
+    }
+}
+
 fn generate_code() -> String {
     use std::time::SystemTime;
     let nanos = SystemTime::now()
@@ -671,10 +691,34 @@ pub async fn handle_reset_request(
         return Err(trc::ResourceEvent::BadParameters.into_err().details("Invalid email address."));
     }
 
-    let _account_id = match server.account_id_from_email(&email, false).await? {
+    let account_id = match server.account_id_from_email(&email, false).await? {
         Some(id) => types::id::Id::new(id.into()),
         None => {
             return Err(trc::ResourceEvent::BadParameters.into_err().details("Account not found."));
+        }
+    };
+
+    let account_obj = match server.registry().get(ObjectId::new(registry::schema::prelude::ObjectType::Account, account_id)).await? {
+        Some(obj) => obj,
+        None => {
+            return Err(trc::ResourceEvent::BadParameters.into_err().details("Account not found."));
+        }
+    };
+
+    let recovery_email = if let registry::schema::prelude::ObjectInner::Account(account) = account_obj.inner {
+        if let registry::schema::structs::Account::User(user_acct) = account {
+            user_acct.recovery_email.filter(|s| !s.trim().is_empty())
+        } else {
+            None
+        }
+    } else {
+        None
+    };
+
+    let recovery_email = match recovery_email {
+        Some(rec) => rec,
+        None => {
+            return Err(trc::ResourceEvent::BadParameters.into_err().details("No recovery email is configured for this account. Please contact your administrator."));
         }
     };
 
@@ -690,12 +734,69 @@ pub async fn handle_reset_request(
         );
     }
 
-    println!("[PASSWORD RESET] Verification code for {}: {}", email, code);
+    println!("[PASSWORD RESET] Verification code generated for {} (recovery: {})", email, recovery_email);
 
+    let domain = email.split('@').nth(1).unwrap_or("nordible.co");
+    let from_email = format!("no-reply@{}", domain);
+    let subject = "Password Reset Verification Code";
+    let message_body = format!(
+        "Hello,\n\nWe received a request to reset the password for your account: {}\n\nYour 6-digit verification code is:\n\n    {}\n\nThis verification code will expire in 10 minutes.\n\nIf you did not request a password reset, please ignore this email or contact your administrator immediately.\n\nBest regards,\nAccount Security",
+        email, code
+    );
+
+    let message_bytes = MessageBuilder::new()
+        .from((format!("{} Security", domain), from_email.as_str()))
+        .to(recovery_email.as_str())
+        .header("Auto-Submitted", "auto-generated")
+        .subject(subject)
+        .text_body(message_body)
+        .write_to_vec()
+        .unwrap_or_default();
+
+    let (message_blob, blob_hold) = server
+        .put_temporary_blob(u32::MAX, &message_bytes, 60)
+        .await
+        .caused_by(trc::location!())?;
+
+    let delivery = server
+        .deliver_message(IngestMessage {
+            sender_address: from_email.into(),
+            sender_authenticated: false,
+            recipients: vec![IngestRecipient {
+                address: recovery_email.clone().into(),
+                orcpt: None,
+                is_spam: false,
+            }],
+            message_blob,
+            message_size: message_bytes.len() as u64,
+            session_id: 0,
+        })
+        .await;
+
+    let mut batch = BatchBuilder::new();
+    batch.clear(blob_hold);
+    let _ = server.store().write(batch.build_all()).await;
+
+    let mut delivery_failed = false;
+    for status in delivery.status {
+        match status {
+            LocalDeliveryStatus::PermanentFailure { reason, .. } | LocalDeliveryStatus::TemporaryFailure { reason } => {
+                eprintln!("[PASSWORD RESET] Delivery error to {}: {}", recovery_email, reason);
+                delivery_failed = true;
+            }
+            LocalDeliveryStatus::Success => {}
+        }
+    }
+
+    if delivery_failed {
+        return Err(trc::ResourceEvent::BadParameters.into_err().details("Failed to deliver verification code to recovery email."));
+    }
+
+    let masked_email = mask_email(&recovery_email);
     let resp = serde_json::json!({
         "success": true,
-        "message": "Verification code generated successfully.",
-        "dev_token": code,
+        "message": format!("Verification code sent to {}.", masked_email),
+        "recovery_email_masked": masked_email,
     });
 
     Ok(HttpResponse::new(StatusCode::OK)
