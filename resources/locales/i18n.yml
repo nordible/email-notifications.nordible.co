@@ -600,3 +600,101 @@ calendar.not_participant:
   el: Δε συμμετέχετε πια σε αυτή την εκδήλωση.
   sv: Du är inte längre en deltagare i den här händelse.
   pl: Nie jesteś już uczestnikiem tego wydarzenia.
+
+auth.reset_password_subject:
+  en: Password Reset Verification Code
+  es: Código de verificación para restablecer la contraseña
+  fr: Code de vérification pour la réinitialisation du mot de passe
+  de: Bestätigungscode zum Zurücksetzen Ihres Passworts
+  it: Codice di verifica per il ripristino della password
+  pt: Código de verificação para redefinição de senha
+  nl: Verificatiecode voor het opnieuw instellen van het wachtwoord
+  da: Bekræftelseskode til nulstilling af adgangskode
+  ca: Codi de verificació per restablir la contrasenya
+  el: Κωδικός επαλήθευσης για επαναφορά κωδικού πρόσβασης
+  sv: Verifieringskod för återställning av lösenord
+  pl: Kod weryfikacyjny do zresetowania hasła
+
+auth.reset_password_greeting:
+  en: Hello,
+  es: Hola,
+  fr: Bonjour,
+  de: Guten Tag,
+  it: Gentile utente,
+  pt: Olá,
+  nl: Hallo,
+  da: Hej,
+  ca: Hola,
+  el: Γεια σας,
+  sv: Hej,
+  pl: Witaj,
+
+auth.reset_password_request:
+  en: We received a request to reset the password for your account:
+  es: Hemos recibido una solicitud para restablecer la contraseña de su cuenta:
+  fr: Nous avons reçu une demande de réinitialisation du mot de passe de votre compte :
+  de: Wir haben eine Anfrage zum Zurücksetzen des Passworts für Ihr Konto erhalten:
+  it: Abbiamo ricevuto una richiesta di ripristino della password per il tuo account:
+  pt: Recebemos uma solicitação para redefinir a senha da sua conta:
+  nl: We hebben een verzoek ontvangen om het wachtwoord van uw account opnieuw in te stellen:
+  da: Vi har modtaget en anmodning om at nulstille adgangskoden til din konto:
+  ca: Hem rebut una sol·licitud per restablir la contrasenya del vostre compte:
+  el: Λάβαμε ένα αίτημα για την επαναφορά του κωδικού πρόσβασης του λογαριασμού σας:
+  sv: Vi har tagit emot en begäran om att återställa lösenordet för ditt konto:
+  pl: Otrzymaliśmy prośbę o zresetowanie hasła do Twojego konta:
+
+auth.reset_password_code_prompt:
+  en: Your 6-digit verification code is:
+  es: Su código de verificación de 6 dígitos es:
+  fr: Votre code de vérification à 6 chiffres est :
+  de: Ihr 6-stelliger Bestätigungscode lautet:
+  it: Il tuo codice di verifica a 6 cifre è:
+  pt: Seu código de verificação de 6 dígitos é:
+  nl: Uw 6-cijferige verificatiecode is:
+  da: Din 6-cifrede bekræftelseskode er:
+  ca: El vostre codi de verificació de 6 dígits és:
+  el: Ο 6-ψήφιος κωδικός επαλήθευσής σας είναι:
+  sv: Din 6-siffriga verifieringskod är:
+  pl: Twój 6-cyfrowy kod weryfikacyjny to:
+
+auth.reset_password_expiry:
+  en: This verification code will expire in 10 minutes.
+  es: Este código de verificación caducará en 10 minutos.
+  fr: Ce code de vérification expirera dans 10 minutes.
+  de: Dieser Bestätigungscode ist 10 Minuten lang gültig.
+  it: Questo codice di verifica scadrà tra 10 minuti.
+  pt: Este código de verificação expirará em 10 minutos.
+  nl: Deze verificatiecode verloopt over 10 minuten.
+  da: Denne bekræftelseskode udløber om 10 minutter.
+  ca: Aquest codi de verificació caducarà en 10 minuts.
+  el: Αυτός ο κωδικός επαλήθευσης θα λήξει σε 10 λεπτά.
+  sv: Denna verifieringskod upphör att gälla om 10 minuter.
+  pl: Ten kod weryfikacyjny wygaśnie za 10 minut.
+
+auth.reset_password_ignore:
+  en: If you did not request a password reset, please ignore this email or contact your administrator.
+  es: Si no ha solicitado restablecer su contraseña, ignore este mensaje o contacte con su administrador.
+  fr: Si vous n'avez pas demandé cette réinitialisation, veuillez ignorer cet e-mail ou contacter votre administrateur.
+  de: Falls Sie diese Anfrage nicht gestellt haben, können Sie diese Nachricht ignorieren oder Ihren Administrator kontaktieren.
+  it: Se non hai richiesto il ripristino della password, ignora questa email o contatta l'amministratore.
+  pt: Se você não solicitou a redefinição de senha, ignore este e-mail ou entre em contato com o administrador.
+  nl: Als u dit verzoek niet heeft gedaan, kunt u deze e-mail negeren of contact opnemen met uw beheerder.
+  da: Hvis du ikke har anmodet om nulstilling, kan du ignorere denne e-mail eller kontakte din administrator.
+  ca: Si no heu sol·licitat el restabliment de la contrasenya, ignoreu aquest missatge o contacteu amb l'administrador.
+  el: Εάν δεν ζητήσατε επαναφορά κωδικού πρόσβασης, παρακαλούμε αγνοήστε αυτό το μήνυμα ή επικοινωνήστε με τον διαχειριστή σας.
+  sv: Om du inte har begärt en återställning kan du ignorera detta e-postmeddelande eller kontakta din administratör.
+  pl: Jeśli nie prosiłeś o zresetowanie hasła, zignoruj tę wiadomość lub skontaktuj się z administratorem.
+
+auth.reset_password_security:
+  en: Account Security
+  es: Seguridad de la cuenta
+  fr: Sécurité du compte
+  de: Kontosicherheit
+  it: Sicurezza dell'account
+  pt: Segurança da conta
+  nl: Accountbeveiliging
+  da: Kontosikkerhed
+  ca: Seguretat del compte
+  el: Ασφάλεια λογαριασμού
+  sv: Kontosäkerhet
+  pl: Bezpieczeństwo konta

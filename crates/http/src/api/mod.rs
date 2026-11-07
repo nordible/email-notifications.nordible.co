@@ -436,7 +436,7 @@ pub async fn handle_signup_request(
 
     let domain_name = request.domain_name.trim().to_ascii_lowercase();
     if domain_name.is_empty() || request.tenant_name.trim().is_empty() || request.admin_username.trim().is_empty() || request.admin_password.trim().is_empty() {
-        return Err(trc::ResourceEvent::BadParameters.into_err().details("All fields are required."));
+        return Err(trc::ResourceEvent::BadParameters.into_err().details("Alle Felder müssen ausgefüllt werden. / All fields are required."));
     }
 
     // Determine plan tier and storage quotas matching marketing site offerings
@@ -676,6 +676,7 @@ fn generate_code() -> String {
 #[derive(serde::Deserialize)]
 struct ResetRequest {
     email: String,
+    locale: Option<String>,
 }
 
 pub async fn handle_reset_request(
@@ -688,20 +689,20 @@ pub async fn handle_reset_request(
 
     let email = request.email.trim().to_ascii_lowercase();
     if email.is_empty() || !email.contains('@') {
-        return Err(trc::ResourceEvent::BadParameters.into_err().details("Invalid email address."));
+        return Err(trc::ResourceEvent::BadParameters.into_err().details("INVALID_EMAIL"));
     }
 
     let account_id = match server.account_id_from_email(&email, false).await? {
         Some(id) => types::id::Id::new(id.into()),
         None => {
-            return Err(trc::ResourceEvent::BadParameters.into_err().details("Account not found."));
+            return Err(trc::ResourceEvent::BadParameters.into_err().details("ACCOUNT_NOT_FOUND"));
         }
     };
 
     let account_obj = match server.registry().get(ObjectId::new(registry::schema::prelude::ObjectType::Account, account_id)).await? {
         Some(obj) => obj,
         None => {
-            return Err(trc::ResourceEvent::BadParameters.into_err().details("Account not found."));
+            return Err(trc::ResourceEvent::BadParameters.into_err().details("ACCOUNT_NOT_FOUND"));
         }
     };
 
@@ -718,7 +719,7 @@ pub async fn handle_reset_request(
     let recovery_email = match recovery_email {
         Some(rec) => rec,
         None => {
-            return Err(trc::ResourceEvent::BadParameters.into_err().details("No recovery email is configured for this account. Please contact your administrator."));
+            return Err(trc::ResourceEvent::BadParameters.into_err().details("NO_RECOVERY_EMAIL"));
         }
     };
 
@@ -734,18 +735,27 @@ pub async fn handle_reset_request(
         );
     }
 
-    println!("[PASSWORD RESET] Verification code generated for {} (recovery: {})", email, recovery_email);
+    let req_locale = request.locale.as_deref().unwrap_or("de");
+    let loc = common::i18n::locale_or_default(req_locale);
 
     let domain = email.split('@').nth(1).unwrap_or("nordible.co");
     let from_email = format!("no-reply@{}", domain);
-    let subject = "Password Reset Verification Code";
+    let from_name = format!("{} {}", domain, loc.auth_reset_password_security);
+    let subject = loc.auth_reset_password_subject;
     let message_body = format!(
-        "Hello,\n\nWe received a request to reset the password for your account: {}\n\nYour 6-digit verification code is:\n\n    {}\n\nThis verification code will expire in 10 minutes.\n\nIf you did not request a password reset, please ignore this email or contact your administrator immediately.\n\nBest regards,\nAccount Security",
-        email, code
+        "{}\n\n{}\n{}\n\n{}\n\n    {}\n\n{}\n\n{}\n\n---\n{}",
+        loc.auth_reset_password_greeting,
+        loc.auth_reset_password_request,
+        email,
+        loc.auth_reset_password_code_prompt,
+        code,
+        loc.auth_reset_password_expiry,
+        loc.auth_reset_password_ignore,
+        from_name
     );
 
     let message_bytes = MessageBuilder::new()
-        .from((format!("{} Security", domain), from_email.as_str()))
+        .from((from_name.as_str(), from_email.as_str()))
         .to(recovery_email.as_str())
         .header("Auto-Submitted", "auto-generated")
         .subject(subject)
@@ -789,13 +799,13 @@ pub async fn handle_reset_request(
     }
 
     if delivery_failed {
-        return Err(trc::ResourceEvent::BadParameters.into_err().details("Failed to deliver verification code to recovery email."));
+        return Err(trc::ResourceEvent::BadParameters.into_err().details("DELIVERY_FAILED"));
     }
 
     let masked_email = mask_email(&recovery_email);
     let resp = serde_json::json!({
         "success": true,
-        "message": format!("Verification code sent to {}.", masked_email),
+        "message": "CODE_SENT",
         "recovery_email_masked": masked_email,
     });
 
@@ -825,7 +835,7 @@ pub async fn handle_reset_confirm(
     let password = request.password.trim();
 
     if email.is_empty() || token.is_empty() || password.is_empty() {
-        return Err(trc::ResourceEvent::BadParameters.into_err().details("All fields are required."));
+        return Err(trc::ResourceEvent::BadParameters.into_err().details("ALL_FIELDS_REQUIRED"));
     }
 
     {
@@ -833,13 +843,13 @@ pub async fn handle_reset_confirm(
         if let Some(entry) = tokens.get(&email) {
             if entry.expires_at < Instant::now() {
                 tokens.remove(&email);
-                return Err(trc::ResourceEvent::BadParameters.into_err().details("Reset token has expired."));
+                return Err(trc::ResourceEvent::BadParameters.into_err().details("TOKEN_EXPIRED"));
             }
             if entry.code != token {
-                return Err(trc::ResourceEvent::BadParameters.into_err().details("Invalid reset token."));
+                return Err(trc::ResourceEvent::BadParameters.into_err().details("INVALID_TOKEN"));
             }
         } else {
-            return Err(trc::ResourceEvent::BadParameters.into_err().details("No password reset requested for this email."));
+            return Err(trc::ResourceEvent::BadParameters.into_err().details("NO_REQUEST_FOUND"));
         }
         tokens.remove(&email);
     }
@@ -847,14 +857,14 @@ pub async fn handle_reset_confirm(
     let account_id = match server.account_id_from_email(&email, false).await? {
         Some(id) => types::id::Id::new(id.into()),
         None => {
-            return Err(trc::ResourceEvent::BadParameters.into_err().details("Account not found."));
+            return Err(trc::ResourceEvent::BadParameters.into_err().details("ACCOUNT_NOT_FOUND"));
         }
     };
 
     let old_account_obj = match server.registry().get(ObjectId::new(registry::schema::prelude::ObjectType::Account, account_id)).await? {
         Some(obj) => obj,
         None => {
-            return Err(trc::ResourceEvent::BadParameters.into_err().details("Failed to load account details."));
+            return Err(trc::ResourceEvent::BadParameters.into_err().details("ACCOUNT_NOT_FOUND"));
         }
     };
 
@@ -869,7 +879,7 @@ pub async fn handle_reset_confirm(
 
         user.set_password(password_hash);
     } else {
-        return Err(trc::ResourceEvent::BadParameters.into_err().details("Only user accounts can reset passwords."));
+        return Err(trc::ResourceEvent::BadParameters.into_err().details("USER_ACCOUNTS_ONLY"));
     }
 
     let write_result = server.registry()
@@ -886,12 +896,12 @@ pub async fn handle_reset_confirm(
             invalidator.process_update(id, &old_account_obj, &updated_account_obj);
             server.invalidate_caches(invalidator).await?;
         }
-        err => return Err(trc::ResourceEvent::BadParameters.into_err().details(format!("Failed to update account: {err:?}"))),
+        err => return Err(trc::ResourceEvent::BadParameters.into_err().details(format!("UPDATE_FAILED: {err:?}"))),
     };
 
     let resp = serde_json::json!({
         "success": true,
-        "message": "Password reset successfully."
+        "message": "PASSWORD_RESET_SUCCESS"
     });
 
     Ok(HttpResponse::new(StatusCode::OK)
