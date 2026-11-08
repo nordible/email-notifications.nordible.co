@@ -757,7 +757,6 @@ pub async fn handle_reset_request(
     let message_bytes = MessageBuilder::new()
         .from((from_name.as_str(), from_email.as_str()))
         .to(recovery_email.as_str())
-        .header("Auto-Submitted", "auto-generated")
         .subject(subject)
         .text_body(message_body)
         .write_to_vec()
