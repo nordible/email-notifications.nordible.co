@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - master
   workflow_dispatch:
 
 concurrency:
@@ -18,26 +19,37 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Encode Secret
+        env:
+          FCM_RAW: ${{ secrets.FCM_SERVICE_ACCOUNT_JSON || secrets.FCM_JSON }}
+        run: |
+          if [ -n "$FCM_RAW" ]; then
+            echo "FCM_B64=$(echo -n "$FCM_RAW" | base64 -w 0)" >> $GITHUB_ENV
+          else
+            echo "FCM_B64=" >> $GITHUB_ENV
+          fi
+
       - name: Deploy and configure FCM on Hetzner
         uses: appleboy/ssh-action@v1.2.0
         env:
-          FCM_JSON: ${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}
+          FCM_B64: ${{ env.FCM_B64 }}
         with:
-          host: ${{ secrets.HETZNER_HOST }}
-          username: ${{ secrets.HETZNER_SSH_USER }}
-          key: ${{ secrets.HETZNER_SSH_KEY }}
-          envs: FCM_JSON
+          host: ${{ secrets.HETZNER_HOST || '95.217.5.54' }}
+          username: ${{ secrets.HETZNER_SSH_USER || 'root' }}
+          key: ${{ secrets.HETZNER_SSH_KEY || secrets.SSH_PRIVATE_KEY || secrets.SSH_KEY }}
+          envs: FCM_B64
           script: |
             set -e
             cd /opt/bulwark-relay
+            git remote set-url origin https://github.com/nordible/email-notifications.nordible.co.git || true
             git fetch origin
-            git checkout main
-            git pull origin main
+            git checkout -f main 2>/dev/null || git checkout -f master
+            git reset --hard origin/$(git branch --show-current)
 
             mkdir -p /opt/bulwark-relay/data
 
-            if [ -n "$FCM_JSON" ]; then
-              echo "$FCM_JSON" > /opt/bulwark-relay/data/fcm-service-account.json
+            if [ -n "$FCM_B64" ]; then
+              echo "$FCM_B64" | base64 -d > /opt/bulwark-relay/data/fcm-service-account.json
               chmod 600 /opt/bulwark-relay/data/fcm-service-account.json
               echo "✅ fcm-service-account.json updated from secret."
             fi
