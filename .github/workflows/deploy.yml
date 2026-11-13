@@ -71,7 +71,7 @@ jobs:
 
           if [ -n "$FCM_B64" ]; then
             echo "$FCM_B64" | base64 -d > /opt/bulwark-relay/data/fcm-service-account.json
-            chmod 600 /opt/bulwark-relay/data/fcm-service-account.json
+            chmod 644 /opt/bulwark-relay/data/fcm-service-account.json
             echo "✅ fcm-service-account.json updated from secret."
           else
             echo "⚠️ Warning: FCM_B64 is empty."
