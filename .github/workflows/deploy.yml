@@ -97,7 +97,7 @@ jobs:
           echo "✅ fcm-service-account.json updated from secret."
 
           echo "$APNS_B64" | base64 -d > "$REMOTE_DIR/data/apns-key.p8"
-          chmod 600 "$REMOTE_DIR/data/apns-key.p8"
+          chmod 644 "$REMOTE_DIR/data/apns-key.p8"
           echo "✅ apns-key.p8 updated from secret."
 
           # Update .env with centralized variables
@@ -118,6 +118,7 @@ jobs:
           update_env "APNS_TEAM_ID" "$APNS_TEAM_ID"
           update_env "APNS_TOPIC" "$APNS_TOPIC"
 
+          export APNS_KEY_ID APNS_TEAM_ID APNS_TOPIC
           docker compose up -d --build --force-recreate
           sleep 3
           docker compose ps
