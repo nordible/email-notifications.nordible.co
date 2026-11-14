@@ -19,68 +19,109 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Check Secrets
+      - name: Validate Configuration and Secrets
+        env:
+          SSH_KEY: ${{ secrets.HETZNER_SSH_KEY }}
+          SSH_HOST: ${{ secrets.HETZNER_HOST }}
+          SSH_USER: ${{ secrets.HETZNER_SSH_USER }}
+          REMOTE_DIR: ${{ secrets.REMOTE_APP_DIR }}
+          FCM_RAW: ${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}
+          APNS_RAW: ${{ secrets.APNS_KEY_P8 }}
+          APNS_KEY_ID: ${{ secrets.APNS_KEY_ID }}
+          APNS_TEAM_ID: ${{ secrets.APNS_TEAM_ID }}
+          APNS_TOPIC: ${{ vars.APNS_TOPIC || secrets.APNS_TOPIC }}
         run: |
-          echo "=== Checking Secret Availability ==="
-          if [ -n "${{ secrets.HETZNER_SSH_KEY || secrets.SSH_PRIVATE_KEY || secrets.SSH_KEY }}" ]; then
-            echo "✅ SSH Key Secret is present."
-          else
-            echo "❌ ERROR: SSH Key Secret is MISSING!"
-            echo "Please ensure HETZNER_SSH_KEY is set in Settings -> Secrets and variables -> Actions -> Repository secrets."
+          echo "=== Validating Required Secrets and Configuration ==="
+          MISSING=()
+
+          # Secrets (Encrypted / Sensitive)
+          [ -z "$SSH_KEY" ] && MISSING+=("Secret: HETZNER_SSH_KEY")
+          [ -z "$SSH_HOST" ] && MISSING+=("Secret: HETZNER_HOST")
+          [ -z "$SSH_USER" ] && MISSING+=("Secret: HETZNER_SSH_USER")
+          [ -z "$REMOTE_DIR" ] && MISSING+=("Secret: REMOTE_APP_DIR")
+          [ -z "$FCM_RAW" ] && MISSING+=("Secret: FCM_SERVICE_ACCOUNT_JSON")
+          [ -z "$APNS_RAW" ] && MISSING+=("Secret: APNS_KEY_P8")
+          [ -z "$APNS_KEY_ID" ] && MISSING+=("Secret: APNS_KEY_ID")
+          [ -z "$APNS_TEAM_ID" ] && MISSING+=("Secret: APNS_TEAM_ID")
+
+          # Variable (Non-sensitive configuration)
+          [ -z "$APNS_TOPIC" ] && MISSING+=("Variable: APNS_TOPIC")
+
+          if [ ${#MISSING[@]} -ne 0 ]; then
+            echo "::error::Deployment halted! Missing required configuration:"
+            for item in "${MISSING[@]}"; do
+              echo "::error::  - $item"
+            done
             exit 1
           fi
-
-          if [ -n "${{ secrets.FCM_SERVICE_ACCOUNT_JSON || secrets.FCM_JSON }}" ]; then
-            echo "✅ FCM Service Account Secret is present."
-          else
-            echo "⚠️ Warning: FCM Service Account Secret is not detected."
-          fi
+          echo "✅ All required secrets and variables are present."
 
       - name: Setup SSH
         env:
-          SSH_KEY: ${{ secrets.HETZNER_SSH_KEY || secrets.SSH_PRIVATE_KEY || secrets.SSH_KEY }}
-          SSH_HOST: ${{ secrets.HETZNER_HOST || '95.217.5.54' }}
+          SSH_KEY: ${{ secrets.HETZNER_SSH_KEY }}
+          SSH_HOST: ${{ secrets.HETZNER_HOST }}
         run: |
           mkdir -p ~/.ssh
           echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
 
-      - name: Deploy to Hetzner
+      - name: Deploy to Remote Server
         env:
-          SSH_HOST: ${{ secrets.HETZNER_HOST || '95.217.5.54' }}
-          SSH_USER: ${{ secrets.HETZNER_SSH_USER || 'root' }}
-          FCM_RAW: ${{ secrets.FCM_SERVICE_ACCOUNT_JSON || secrets.FCM_JSON }}
+          SSH_HOST: ${{ secrets.HETZNER_HOST }}
+          SSH_USER: ${{ secrets.HETZNER_SSH_USER }}
+          REMOTE_DIR: ${{ secrets.REMOTE_APP_DIR }}
+          REPO_URL: "https://github.com/${{ github.repository }}.git"
+          FCM_RAW: ${{ secrets.FCM_SERVICE_ACCOUNT_JSON }}
+          APNS_RAW: ${{ secrets.APNS_KEY_P8 }}
+          APNS_KEY_ID: ${{ secrets.APNS_KEY_ID }}
+          APNS_TEAM_ID: ${{ secrets.APNS_TEAM_ID }}
+          APNS_TOPIC: ${{ vars.APNS_TOPIC || secrets.APNS_TOPIC }}
         run: |
-          if [ -n "$FCM_RAW" ]; then
-            FCM_B64=$(echo -n "$FCM_RAW" | base64 -w 0)
-          else
-            FCM_B64=""
-          fi
+          FCM_B64=$(echo -n "$FCM_RAW" | base64 -w 0)
+          APNS_B64=$(echo -n "$APNS_RAW" | base64 -w 0)
 
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new "${SSH_USER}@${SSH_HOST}" \
-            "FCM_B64='$FCM_B64' bash -s" << 'EOF'
+            "REMOTE_DIR='$REMOTE_DIR' REPO_URL='$REPO_URL' FCM_B64='$FCM_B64' APNS_B64='$APNS_B64' APNS_KEY_ID='$APNS_KEY_ID' APNS_TEAM_ID='$APNS_TEAM_ID' APNS_TOPIC='$APNS_TOPIC' bash -s" << 'EOF'
           set -e
-          cd /opt/bulwark-relay
-          git remote set-url origin https://github.com/nordible/email-notifications.nordible.co.git || true
+          cd "$REMOTE_DIR"
+          git remote set-url origin "$REPO_URL" || true
           git fetch origin
           git checkout -f main 2>/dev/null || git checkout -f master
           git reset --hard origin/$(git branch --show-current)
 
-          mkdir -p /opt/bulwark-relay/data
+          mkdir -p "$REMOTE_DIR/data"
 
-          if [ -n "$FCM_B64" ]; then
-            echo "$FCM_B64" | base64 -d > /opt/bulwark-relay/data/fcm-service-account.json
-            chmod 644 /opt/bulwark-relay/data/fcm-service-account.json
-            echo "✅ fcm-service-account.json updated from secret."
-          else
-            echo "⚠️ Warning: FCM_B64 is empty."
-          fi
+          echo "$FCM_B64" | base64 -d > "$REMOTE_DIR/data/fcm-service-account.json"
+          chmod 644 "$REMOTE_DIR/data/fcm-service-account.json
+          echo "✅ fcm-service-account.json updated from secret."
+
+          echo "$APNS_B64" | base64 -d > "$REMOTE_DIR/data/apns-key.p8"
+          chmod 600 "$REMOTE_DIR/data/apns-key.p8"
+          echo "✅ apns-key.p8 updated from secret."
+
+          # Update .env with centralized variables
+          touch "$REMOTE_DIR/.env"
+          update_env() {
+            local key="$1"
+            local val="$2"
+            if [ -n "$val" ]; then
+              if grep -q "^${key}=" "$REMOTE_DIR/.env"; then
+                sed -i "s|^${key}=.*|${key}=${val}|" "$REMOTE_DIR/.env"
+              else
+                echo "${key}=${val}" >> "$REMOTE_DIR/.env"
+              fi
+            fi
+          }
+
+          update_env "APNS_KEY_ID" "$APNS_KEY_ID"
+          update_env "APNS_TEAM_ID" "$APNS_TEAM_ID"
+          update_env "APNS_TOPIC" "$APNS_TOPIC"
 
           docker compose up -d --build --force-recreate
           sleep 3
-          docker ps --filter name=bulwark-relay
-          echo "=== Bulwark Relay logs ==="
-          docker logs --tail 30 bulwark-relay || true
+          docker compose ps
+          echo "=== Relay Container Logs ==="
+          docker compose logs --tail 30 || true
           echo "✅ Deployment finished successfully!"
           EOF
