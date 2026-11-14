@@ -93,7 +93,7 @@ jobs:
           mkdir -p "$REMOTE_DIR/data"
 
           echo "$FCM_B64" | base64 -d > "$REMOTE_DIR/data/fcm-service-account.json"
-          chmod 644 "$REMOTE_DIR/data/fcm-service-account.json
+          chmod 644 "$REMOTE_DIR/data/fcm-service-account.json"
           echo "✅ fcm-service-account.json updated from secret."
 
           echo "$APNS_B64" | base64 -d > "$REMOTE_DIR/data/apns-key.p8"
