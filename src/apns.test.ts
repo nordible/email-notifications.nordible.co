@@ -46,7 +46,7 @@ describe('apnsPayload', () => {
       body: Record<string, unknown>;
     };
     assert.deepEqual(Object.keys(body).sort(), ['aps', 'body']);
-    assert.deepEqual(body.aps.alert, { title: 'Bulwark Mail', body: 'New message' });
+    assert.deepEqual(body.aps.alert, { title: 'EMAIL by Nordible.Co', body: 'New message' });
     // The extension only runs for mutable notifications.
     assert.equal(body.aps['mutable-content'], 1);
     assert.equal(body.aps['thread-id'], 'c');

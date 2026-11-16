@@ -1209,7 +1209,7 @@ describe('anything else', () => {
   it('serves the landing page', async () => {
     const res = await fetch(`${relay.base}/`);
     assert.equal(res.status, 200);
-    assert.match(await res.text(), /Bulwark Push Relay/);
+    assert.match(await res.text(), /EMAIL by Nordible\.Co Push Relay/);
   });
 });
 

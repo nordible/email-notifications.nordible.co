@@ -59,7 +59,7 @@ const HOST = process.env.HOST ?? '0.0.0.0';
 const MAX_BODY_BYTES = 64 * 1024;
 const OVERSIZE_GRACE_MS = 2000;
 const MAX_VERIFICATION_CODE_CHARS = 512;
-const REPO_URL = 'https://github.com/bulwarkmail/relay';
+const REPO_URL = 'https://github.com/nordible/email-notifications.nordible.co';
 
 // How long after registration we still report a subscription as "active" even
 // though it has never forwarded a push. A freshly-created subscription hasn't
@@ -75,7 +75,7 @@ const LANDING_HTML = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Bulwark Push Relay</title>
+<title>EMAIL by Nordible.Co Push Relay</title>
 <style>
   :root { color-scheme: light dark; }
   body { font: 16px/1.55 system-ui, -apple-system, Segoe UI, sans-serif; max-width: 36rem; margin: 4rem auto; padding: 0 1.25rem; }
@@ -85,7 +85,7 @@ const LANDING_HTML = `<!doctype html>
 </style>
 </head>
 <body>
-<h1>Bulwark Push Relay</h1>
+<h1>EMAIL by Nordible.Co Push Relay</h1>
 <p>When your mail server has something new, this pings your phone.</p>
 <p>It doesn't see the mail, not even the subject or the sender. All it gets is a push token and the ping.</p>
 <p>Source: <a href="${REPO_URL}">${REPO_URL}</a></p>

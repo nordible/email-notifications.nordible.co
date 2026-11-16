@@ -94,7 +94,7 @@ export function apnsJwt(config: ApnsConfig, now = Date.now()): string {
 export function apnsPayload(payload: ForwardPayload): Record<string, unknown> {
   return {
     aps: {
-      alert: { title: 'Bulwark Mail', body: 'New message' },
+      alert: { title: 'EMAIL by Nordible.Co', body: 'New message' },
       sound: 'default',
       'mutable-content': 1,
       // Groups the notifications of one account.
