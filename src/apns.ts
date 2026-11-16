@@ -52,7 +52,7 @@ async function loadConfig(): Promise<ApnsConfig | null> {
       return null;
     }
   }
-  return { keyPem, keyId, teamId, topic: process.env.APNS_TOPIC?.trim() || 'org.bulwarkmail.mobile' };
+  return { keyPem, keyId, teamId, topic: process.env.APNS_TOPIC?.trim() || 'co.nordible.mail' };
 }
 
 /** The APNs configuration, or null when the relay has no key (APNs off). */

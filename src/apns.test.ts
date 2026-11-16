@@ -18,7 +18,7 @@ const config: ApnsConfig = {
   keyPem: privateKey.export({ type: 'pkcs8', format: 'pem' }).toString(),
   keyId: 'KEY1234567',
   teamId: 'TEAM123456',
-  topic: 'org.bulwarkmail.mobile',
+  topic: 'co.nordible.mail',
 };
 
 const payload: ForwardPayload = {
@@ -134,7 +134,7 @@ describe('sendApnsPush', () => {
     assert.equal(result.ok, true);
     assert.ok(seen);
     assert.equal(seen.headers[':path'], `/3/device/${token}`);
-    assert.equal(seen.headers['apns-topic'], 'org.bulwarkmail.mobile');
+    assert.equal(seen.headers['apns-topic'], 'co.nordible.mail');
     assert.equal(seen.headers['apns-push-type'], 'alert');
     assert.match(String(seen.headers.authorization), /^bearer [\w-]+\.[\w-]+\.[\w-]+$/);
     assert.deepEqual(JSON.parse(seen.body), apnsPayload(payload));

@@ -88,7 +88,6 @@ const LANDING_HTML = `<!doctype html>
 <h1>EMAIL by Nordible.Co Push Relay</h1>
 <p>When your mail server has something new, this pings your phone.</p>
 <p>It doesn't see the mail, not even the subject or the sender. All it gets is a push token and the ping.</p>
-<p>Source: <a href="${REPO_URL}">${REPO_URL}</a></p>
 </body>
 </html>
 `;
